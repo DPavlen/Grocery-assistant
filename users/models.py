@@ -74,9 +74,34 @@ class User(AbstractUser):
         return str(self.username)
 
 
-#Обязательные поля для пользователя:
-#логин,
-#пароль,
-#email,
-#имя,
-#фамилия.
+class Subscription(models.Model):
+    """Подписки пользователей на друг друга.
+    author(int): Автор рецепта. Связь через ForeignKey.
+    user(int): Подписчик. Cвязь через ForeignKey.
+    date_sub(datetime): Дата подписки.
+    """
+    author = models.ForeignKey(
+        User, 
+        verbose_name="Автор рецепта",
+        related_name="Subscribers",
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        User,
+        verbose_name="Подписчики",
+        related_name="Subscriptions",
+        on_delete=models.CASCADE,
+    )    
+    date_sub = models.DateTimeField(
+        verbose_name="Дата создания подписки",
+        auto_now_add=True,
+        editable=False,
+    )
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+        ordering = ('-id',)
+
+    def __str__(self):
+        return f"{self.user.username} подписан на {self.author.username}"
