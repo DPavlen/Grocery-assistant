@@ -26,3 +26,7 @@ python3 manage.py migrate
 ```
 python3 manage.py runserver
 ```
+Установи приложение users:
+```
+python  manage.py startapp users
+```
