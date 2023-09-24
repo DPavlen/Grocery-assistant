@@ -1,21 +1,20 @@
-from django.contrib.auth.models import AbstractBaseUser, UserManager
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+# from users.validators import UsernameValidatorRegex, username_me
 
-class User(AbstractBaseUser):
+
+class User(AbstractUser):
     """Кастомная модель переопределенного юзера.
     При создании пользователя все поля обязательны для заполнения."""
-    class RoleChoice(models.TextChoices):
+    class RoleChoises(models.TextChoices):
         """Определение роли юзера."""
         USER = "user"
         MODERATOR = "moderator"
         ADMIN = "admin"
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
-
     username = models.CharField(
-        "Имя пользователя",
+        "Логин пользователя",
         max_length=150,
         unique=True,
     )
@@ -31,21 +30,28 @@ class User(AbstractBaseUser):
     first_name = models.CharField(
         "Имя пользователя",
         max_length=254,
-        unique=True
+        blank=True
     )
     last_name = models.CharField(
         "Фамилия пользователя",
         max_length=254,
-        unique=True
+        blank=True
+    )
+    email = models.EmailField(
+        blank=True,
+        max_length=254,
+        unique=True,
+        verbose_name="email address",
     )
     role = models.TextField(
         "Пользовательская роль юзера",
-        choices=RoleChoice.choices,
-        #default=RoleChoice.USER,
+        choices=RoleChoises.choices,
+        default=RoleChoises.USER,
         max_length=50
     )
-    # UserManager класс или компонент, отвечающий за управление пользователями в системе.
-    objects = UserManager()
+
+    REQUIRED_FIELDS = ["email"]
+    USERNAME_FIELDS = "email"
 
     @property
     def is_admin(self):
@@ -53,19 +59,19 @@ class User(AbstractBaseUser):
 
     @property
     def is_moderator(self):
-        return self.role == User.RoleChoises.MODERATOR or self.is_moderator
+        return self.role == User.RoleChoises.MODERATOR
 
     @property
     def is_user(self):
         return self.role == User.RoleChoises.USER
 
     class Meta:
-        ordering = ("id",)
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+        ordering = ["-id"]
 
     def __str__(self):
-        return f"{self.username}: {self.email}"
+        return str(self.username)
 
 
 #Обязательные поля для пользователя:
