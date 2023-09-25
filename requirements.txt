@@ -10,3 +10,5 @@ django-filter==23.2
 action==1.4.4
 django-import-export
 python-dotenv
+django-colorfield==0.10.1
+# python manage.py collectstatic
