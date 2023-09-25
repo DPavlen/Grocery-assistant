@@ -32,5 +32,7 @@ python  manage.py startapp users
 ```
 Установите приложение users:
 ```
-python  manage.py startapp users
+python  manage.py startapp recipes
 ```
+Пишу описание моделей Tag, Recipe, Ingredient, ManyToMany Recipe with Ingredients
+Расширение стороних библиотек: django-colorfield  https://github.com/fabiocaccamo/django-colorfield

@@ -53,18 +53,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ["email"]
     USERNAME_FIELDS = "email"
 
-    @property
-    def is_admin(self):
-        return self.role == User.RoleChoises.ADMIN or self.is_superuser
-
-    @property
-    def is_moderator(self):
-        return self.role == User.RoleChoises.MODERATOR
-
-    @property
-    def is_user(self):
-        return self.role == User.RoleChoises.USER
-
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
