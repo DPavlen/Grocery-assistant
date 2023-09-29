@@ -1,7 +1,10 @@
 from colorfield.fields import ColorField
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
+from foodgram.settings import MIN_COOKING_TIME, MAX_COOKING_TIME
+from recipes.validators import SlugValidator
 from users.models import User
 
 
@@ -39,8 +42,7 @@ class Tag(models.Model):
     )
     color = ColorField(
         verbose_name='Цвет в формате HEX',
-        #max_length=7,
-        format='hexa',
+        format='hex',
         default='#FF0000',
         unique=True,
     )
@@ -48,7 +50,7 @@ class Tag(models.Model):
         verbose_name='Slug названия тега',
         max_length=150,
         unique=True,
-        # Валидация ^[-a-zA-Z0-9_]+$
+        validators=[SlugValidator],
     )
 
     class Meta:
@@ -58,31 +60,8 @@ class Tag(models.Model):
     
     def __str__(self):
         return self.name 
-
     
-class IngredientInRecipe(models.Model):
-    """Ингредиенты в рецепте.
-    Определение количества ингредиентов в рецепте.
-    """
-    ingredient = models.ForeignKey(
-        Ingredient,
-        on_delete=models.CASCADE,
-        related_name='list_of_ingredient',
-        verbose_name='Ингредиенты в рецепте'
-    )
-    amount = models.IntegerField(
-        verbose_name='Количество ингредиентов',
-        default=1,
-    )
-    class Meta:
-        default_related_name = 'ingridients_recipe'
-        verbose_name = 'Ингредиент в рецепте'
-        verbose_name_plural = 'Ингредиенты в рецепте'
     
-    def __str__(self):
-        return f'{self.ingredient} – {self.amount}'
-    
-
 class Recipe(models.Model):
     """Рецепт.Основная модель, у которой есть следующие атрибуты:
     тег рецепта, автор рецепта, ингредиенты рецепта, название рецепта,
@@ -101,9 +80,10 @@ class Recipe(models.Model):
         # required=True           
     )
     ingredients = models.ManyToManyField(
-        IngredientInRecipe,
-        related_name='recipes',
+        Ingredient,
+        related_name='recipess',
         verbose_name='Ингредиенты в рецепте',
+        through='recipes.IngredientInRecipe',
         # required=True          
     )
     name = models.CharField(
@@ -124,10 +104,19 @@ class Recipe(models.Model):
         help_text='Введите Описание рецепта'
         # required=True    
     )
-    cooking_time = models.SmallIntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления блюда',
-        help_text='Ввведите время приготовления'
-        # required=True 
+        help_text='Ввведите время приготовления блюда',
+        validators=[
+            MinValueValidator(
+                MIN_COOKING_TIME, 
+                message=f'Время приготовления блюда должно '
+                        f'быть не менее {MIN_COOKING_TIME} минут.'),
+            MaxValueValidator(
+                MAX_COOKING_TIME, 
+                message=f'Время приготовления блюда не превышает '
+                        f'более {MAX_COOKING_TIME} минут.'),
+        ]
     )
 
     class Meta:
@@ -136,6 +125,36 @@ class Recipe(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class IngredientInRecipe(models.Model):
+    """Состав блюда | Ингредиенты в рецепте.
+    Определение количества ингредиентов в рецепте.
+    """
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='list_of_recipe',
+        verbose_name='Рецепты',
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='list_of_ingredient',
+        verbose_name='Ингредиенты в рецепте'
+    )
+    amount = models.SmallIntegerField(
+        verbose_name='Количество ингредиентов',
+        default=1,
+    )
+
+    class Meta:
+        default_related_name = 'ingridients_recipe'
+        verbose_name = 'Состав блюда | Ингредиент в рецепте'
+        verbose_name_plural = 'Состав блюда | Ингредиенты в рецепте'
+    
+    def __str__(self):
+        return f'{self.ingredient} – {self.amount}'
 
 
 class Favorite(models.Model):

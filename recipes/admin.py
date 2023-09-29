@@ -29,8 +29,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'image',
         'text',
-        #'ingredient',
-        #'tags',
         'cooking_time'
     )
     search_fields = ('author',)
@@ -42,11 +40,12 @@ class IngredientInRecipeAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Ингредиенты в рецепте."""
     list_display = (
         'id',
+        'recipe',
         'ingredient',
         'amount',
     )
     search_fields = ('ingredient',)
-    list_filter = ('id', 'ingredient', 'amount')
+    list_filter = ('id','recipe', 'ingredient', 'amount')
 
 
 
