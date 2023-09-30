@@ -19,16 +19,17 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "email",
-            "id",
-            "username",
-            "first_name",
-            "last_name",
-            "is_subscribed",
-            "password",
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'password',
         )
         # поле "password" будет доступно только для записи 
         extra_kwargs = {'password': {'write_only': True}}
+                        
 
     def create(self, validated_data):
         """Создание нового пользователя с указанными полями."""
@@ -42,13 +43,16 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
-    def get_is_subscribed(self, obj, author):
+    def get_is_subscribed(self, author):
         """Проверка подписки пользователей. Определяет - подписан ли текущий пользователь
         на просматриваемого пользователя(True or False)."""
         user = self.context.get('request').user
-        if user.is_anonymous or (user == obj):
+        if user.is_anonymous:
             return False
         return Subscription.objects.filter(user=user, author=author).exists()
+
+
+
 
 
 # class SubscriptionUserSerializer()
