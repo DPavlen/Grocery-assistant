@@ -1,4 +1,5 @@
 import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -110,6 +111,42 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
+    ),
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',  # поле, используемое для авторизации (вместо стандартного 'username')
+    'HIDE_USERS': False,
+    # 'USER_CREATE_PASSWORD_RETYPE': True,  # требовать повторного ввода пароля при регистрации
+
+    'SERIALIZERS': {
+                                      # UserSerializer
+        'user': 'api.serializers.UserSerializer',
+        'user_create': 'api.serializers.UserSerializer',
+        'current_user': 'api.serializers.UserSerializer',
+        'token': 'djoser.serializers.TokenSerializer',  # указание используемого сериалайзера для токена
+        #'set_password': 'djoser.serializers.SetPasswordSerializer',
+    },
+
+    'PERMISSIONS': {
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+    },
+}
+
+# JWT_AUTH = {
+#     'JWT_PAYLOAD_HANDLER':
+#     'rest_framework_jwt.utils.jwt_payload_handler',
+#     'JWT_ENCODE_HANDLER':
+#     'rest_framework_jwt.utils.jwt_encode_handler',
+
+# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -133,24 +170,10 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# DJOSER = {
-#     'SERIALIZERS': {
-#         'user_create': 'api.serializers.CustomUserCreateSerializer',
-#         'user': 'api.serializers.CustomUserSerializer',
-#         'current_user': 'api.serializers.CustomUserSerializer',
-#     },
-
-#     'PERMISSIONS': {
-#         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-#         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-#     },
-#     'HIDE_USERS': False,
-# }
-
-# Абстракция Usera для app users
-AUTH_USER_MODEL = 'users.User'
 
 
 # Время приготовления
 MIN_COOKING_TIME = 1 
 MAX_COOKING_TIME = 600
+
+ 
