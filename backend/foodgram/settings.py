@@ -131,7 +131,7 @@ DJOSER = {
         'user_create': 'api.serializers.UserSerializer',
         'current_user': 'api.serializers.UserSerializer',
         'token': 'djoser.serializers.TokenSerializer',  # указание используемого сериалайзера для токена
-        #'set_password': 'djoser.serializers.SetPasswordSerializer',
+        'set_password': 'djoser.serializers.SetPasswordSerializer',
     },
 
     'PERMISSIONS': {

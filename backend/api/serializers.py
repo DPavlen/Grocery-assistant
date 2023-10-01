@@ -4,7 +4,8 @@ from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import SlugRelatedField
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
-# from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import SetPasswordSerializer
+
 
 from recipes.models import (
     Ingredient, Tag, Recipe, IngredientInRecipe, Favorite, ShoppingCart)
@@ -43,6 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+    
     def get_is_subscribed(self, author):
         """Проверка подписки пользователей. Определяет - подписан ли текущий пользователь
         на просматриваемого пользователя(True or False)."""
@@ -52,7 +54,3 @@ class UserSerializer(serializers.ModelSerializer):
         return Subscription.objects.filter(user=user, author=author).exists()
 
 
-
-
-
-# class SubscriptionUserSerializer()

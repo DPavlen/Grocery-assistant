@@ -28,18 +28,18 @@ from users.models import User, Subscription
  
 
 
-class UserViewSet(UserViewSet, APIView):
+class CustomUserViewSet(UserViewSet):
     """Работает с пользователями. Регистрация пользователей,
      Вывод пользователей. У авторизованных пользователей возможность подписки."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PaginationCust
     link_model = Subscription
     @action(
-        methods=['GET', 'PATCH', 'POST'],
         detail=True,
-        url_path='me',
+        # url_path='me',
+        methods=['get', 'delete', 'patch'],
         permission_classes=[IsAuthenticated],
     )
     def get_patch_me(self, request):
@@ -65,11 +65,17 @@ class UserViewSet(UserViewSet, APIView):
 #         return Response({'username': user.username, 'email': user.email})
 
 
-# class SetPasswordAPIView(APIView):
+# class SetPasswordViewSet(viewsets.GenericViewSet):
 #     permission_classes = [IsAuthenticated]
-#     def post(self, request):
+
+#     def set_password(self, request):
 #         serializer = SetPasswordSerializer(data=request.data)
 #         serializer.is_valid(raise_exception=True)
-#         return Response(status=status.HTTP_200_OK)
+
+#         # Обработка изменения пароля пользователя
+#         # ...
+
+#         return Response(User.username, status=status.HTTP_200_OK)
+
 
 
