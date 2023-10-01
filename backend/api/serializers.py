@@ -54,3 +54,24 @@ class UserSerializer(serializers.ModelSerializer):
         return Subscription.objects.filter(user=user, author=author).exists()
 
 
+class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения Тегов."""
+    class Meta:
+        model = Tag
+        fields = (
+            'id',
+            'name', 
+            'slug',
+            'color',
+        )      
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения Ингредиентов."""
+    class Meta:
+        model = Ingredient
+        fields = (
+            'id',
+            'name', 
+            'measurement_unit',
+        )      
