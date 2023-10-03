@@ -63,7 +63,7 @@ class User(AbstractUser):
         return str(self.username)
 
 
-class Subscription(models.Model):
+class Subscriptions(models.Model):
     '''Подписки пользователей на друг друга.
     author(int): Автор рецепта. Связь через ForeignKey.
     user(int): Подписчик. Cвязь через ForeignKey.
@@ -72,13 +72,13 @@ class Subscription(models.Model):
     author = models.ForeignKey(
         User, 
         verbose_name='Автор рецепта',
-        related_name='Subscribers',
+        related_name='subscribe',
         on_delete=models.CASCADE,
     )
     user = models.ForeignKey(
         User,
-        verbose_name='Подписчики',
-        related_name='Subscriptions',
+        verbose_name='Подписчик',
+        related_name='subscription',
         on_delete=models.CASCADE,
     )    
     date_sub = models.DateTimeField(
@@ -98,3 +98,5 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f'{self.user.username} подписан на {self.author.username}'
+    
+
