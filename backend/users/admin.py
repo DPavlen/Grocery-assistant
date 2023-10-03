@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Subscription
+from .models import User, Subscriptions
 
 
 class BaseAdminSettings(admin.ModelAdmin):
@@ -26,7 +26,7 @@ class UsersAdmin(BaseAdminSettings):
 
 admin.site.register(User, UsersAdmin)
 
-@admin.register(Subscription)
+@admin.register(Subscriptions)
 class SubscriptionAdmin(admin.ModelAdmin):
     """Настроенная панель (управление подписками)."""
     list_display = (

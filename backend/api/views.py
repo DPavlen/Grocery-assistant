@@ -17,17 +17,15 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from .pagination import PaginationCust
 from .permissions import IsAdminOrReadOnly, IsAdmitOrGetOut, IsAuthorOrReadOnly
 from .serializers import (
-    UserSerializer, TagSerializer, IngredientSerializer
+    UserSerializer, TagSerializer, IngredientSerializer, UserSubscriptionsSerializer
 )
 
 from recipes.models import (
     Ingredient, Tag, Recipe, IngredientInRecipe, Favorite, ShoppingCart)
-from users.models import User, Subscription
+from users.models import User, Subscriptions
 
 
  
-
-
 class CustomUserViewSet(UserViewSet):
     """Работа с пользователями. Регистрация пользователей,
      Вывод пользователей. У авторизованных пользователей возможность подписки.
@@ -36,26 +34,54 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = UserSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PaginationCust
-    link_model = Subscription
+
+    @action(
+        detail=False,
+        permission_classes=[IsAuthenticated],
+    )  
+    def subscriptions(self, request):
+        """Просмотр подписок на авторов.Мои подписки."""
+        user = request.user
+        queryset = User.objects.filter(subscribe__user=user)
+        pages = self.paginate_queryset(queryset)
+        serializer = UserSubscriptionsSerializer(
+            pages,
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
+
     @action(
         detail=True,
-        methods=['get', 'delete', 'patch'],
+        methods=['get', 'delete', 'post'],
         permission_classes=[IsAuthenticated],
     )
-    def get_patch_me(self, request):
-        user = get_object_or_404(User, username=self.request.user)
-        if request.method == 'GET':
-            serializer = UserSerializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        if request.method == 'PATCH':
-            serializer = UserSerializer(
-                user, data=request.data, partial=True
+    def subscribe(self, request, **kwargs):
+        """Подписка или отписка от автора рецептов."""
+        user = request.user
+        author_id = self.kwargs.get('id')
+        author = get_object_or_404(User, id=author_id)
+
+        if request.method == 'POST':
+            serializer = UserSubscriptionsSerializer(
+                author,
+                data=request.data,
+                context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            Subscriptions.objects.create(user=user, author=author)
+            return Response('Подписка оформлена', status=status.HTTP_204_NO_CONTENT)
 
-
+        
+        if request.method == 'DELETE':
+            subscription = get_object_or_404(
+                Subscriptions,
+                user=user,
+                author=author
+            )
+            subscription.delete()
+            return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
+    
 
 class TagViewSet(ReadOnlyModelViewSet):
     """Работа с Тегами. Получить список всех тегов.

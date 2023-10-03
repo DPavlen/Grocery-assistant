@@ -12,3 +12,4 @@ django-import-export==3.3.1
 python-dotenv
 django-colorfield==0.10.1
 djoser==2.2.0
+drf-extra-fields=3.7.0

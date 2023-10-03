@@ -4,12 +4,13 @@ from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import SlugRelatedField
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
-from djoser.serializers import SetPasswordSerializer
+#from djoser.serializers import SetPasswordSerializer
+from drf_extra_fields.fields import Base64ImageField
 
 
 from recipes.models import (
     Ingredient, Tag, Recipe, IngredientInRecipe, Favorite, ShoppingCart)
-from users.models import User, Subscription
+from users.models import User, Subscriptions
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,7 +52,71 @@ class UserSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Subscription.objects.filter(user=user, author=author).exists()
+        return Subscriptions.objects.filter(user=user, author=author).exists()
+
+
+class UserSubscriptionsSerializer(serializers.ModelSerializer):
+    """Сериализатор для подписок пользователя. 
+    Выводится текущий пользователь."""
+    recipes_count = SerializerMethodField()
+    recipes = SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'recipes',
+            'recipes_count',
+        )
+
+
+    def get_recipes(self, author):
+        """Количество рецептов, связанных с текущим автором."""
+        return author.recipes.count()
+    
+
+    def get_recipes_count(self, author):
+        """Получить количество рецептов для данного автора."""
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        recipes = author.recipes.all()[:int(limit)] if limit else author.recipes.all()
+        serializer = ShortRecipeSerializer(recipes, many=True, read_only= True)
+        return serializer.data
+    
+    def validate(self, data):
+        """Проверка на повторную подписку к существующему пользователю.
+        Проверка на подписку самого себя."""
+        author = self.instance
+        user = self.context.get('request').user
+        if Subscriptions.objects.filter(author=author, user=user).exists():
+            raise ValidationError(
+                'Вы уже подписаны на этого пользователя себя!'
+                )
+        if user == author:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя!'
+            )
+        return data
+    
+
+
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор короткого рецепта.
+    image позволяет передавать изображения в виде base64-строки по API."""
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
 
 
 class TagSerializer(serializers.ModelSerializer):
