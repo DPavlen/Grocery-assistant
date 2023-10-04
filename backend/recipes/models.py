@@ -81,9 +81,9 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        related_name='recipess',
-        verbose_name='Ингредиенты в рецепте',
-        through='recipes.IngredientInRecipe',
+        related_name='recipes',
+        verbose_name='Состав блюда',
+        through='recipes.CompositionOfDish',
         # required=True          
     )
     name = models.CharField(
@@ -127,20 +127,20 @@ class Recipe(models.Model):
         return self.name
 
 
-class IngredientInRecipe(models.Model):
+class CompositionOfDish(models.Model):
     """Состав блюда | Ингредиенты в рецепте.
     Определение количества ингредиентов в рецепте.
     """
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='list_of_recipe',
+        related_name='composition_list',
         verbose_name='Рецепты',
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='list_of_ingredient',
+        # related_name='list_of_dish',
         verbose_name='Ингредиенты в рецепте'
     )
     amount = models.SmallIntegerField(
@@ -149,7 +149,7 @@ class IngredientInRecipe(models.Model):
     )
 
     class Meta:
-        default_related_name = 'ingridients_recipe'
+        # default_related_name = 'composition_of_dish'
         verbose_name = 'Состав блюда | Ингредиент в рецепте'
         verbose_name_plural = 'Состав блюда | Ингредиенты в рецепте'
     
