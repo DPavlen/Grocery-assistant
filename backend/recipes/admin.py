@@ -2,9 +2,8 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from recipes.models import (Ingredient, Tag, Recipe, IngredientInRecipe, 
+from recipes.models import (Ingredient, Tag, Recipe, CompositionOfDish, 
                             Favorite, ShoppingCart)
-
 
 
 @admin.register(Tag)
@@ -35,9 +34,9 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('id', 'author', 'name')
 
 
-@admin.register(IngredientInRecipe)
-class IngredientInRecipeAdmin(admin.ModelAdmin):
-    """Настроенная админ-панель Ингредиенты в рецепте."""
+@admin.register(CompositionOfDish)
+class CompositionOfDishAdmin(admin.ModelAdmin):
+    """Настроенная админ-панель Состав блюда."""
     list_display = (
         'id',
         'recipe',
