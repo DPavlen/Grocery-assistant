@@ -21,7 +21,11 @@ class Command(BaseCommand):
         with open(file, newline='', encoding='utf-8') as file_all:
             reader = csv.reader(file_all)
             for row in reader:
+                name, measurement_unit, *_ = row
                 status, created = Ingredient.objects.update_or_create(
-                    name=row[0],
-                    measurement_unit=row[1]
+                    # name, measurement_unit, *_ = row, 
+                    name=name,
+                    measurement_unit=measurement_unit
+                    # name=row[0],
+                    # measurement_unit=row[1]
                 )

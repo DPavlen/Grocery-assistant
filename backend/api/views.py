@@ -1,3 +1,9 @@
+from datetime import datetime
+
+from reportlab.pdfgen import canvas
+from tkinter import Canvas
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
@@ -14,7 +20,7 @@ from .serializers import (
     RecipeRecordSerializer, ShortRecipeSerializer
 )
 from recipes.models import (
-    Ingredient, Tag, Recipe, Favorite, ShoppingCart)
+    Ingredient, Tag, Recipe, Favorite, ShoppingCart, CompositionOfDish)
 from users.models import User, Subscriptions
 
 
@@ -98,7 +104,7 @@ class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
     queryset = Recipe.objects.all()
-    permission_classes = (IsAdminAuthorOrReadOnly)
+    # permission_classes = (IsAdminAuthorOrReadOnly)
     pagination_class = PaginationCust
     # filter_backends
 
@@ -153,3 +159,35 @@ class RecipeViewSet(ModelViewSet):
         except models.DoesNotExist:
             return Response({'Ошибка': 'Рецепт уже был удален!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    @action(
+        detail=False,
+        permission_classes=[IsAuthenticated],
+    )
+    def download_shopping_cart(self, request):
+        """
+        Получение списка покупок у текущего
+        пользователя из базы данных.
+        """
+        shopping_cart = ShoppingCart.objects.filter(user=request.user)
+        
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="shopping_cart.pdf"'
+        pdf_filename = 'shopping_cart.pdf' 
+        pdf = canvas.Canvas(pdf_filename)
+
+        y = 800 
+        for item in shopping_cart:
+            data = f'ID: {item.id}, User: {item.user}, Recipe: {item.recipe}'
+            pdf.drawString(100, y, data)
+            y -= 20
+            pdf.showPage() 
+
+        pdf.save() 
+        return response
+
+
+
+
