@@ -2,17 +2,13 @@ from django.contrib.auth import authenticate, update_session_auth_hash
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404
 from djoser.views import UserViewSet
-from djoser.serializers import SetPasswordSerializer
-# from rest_framework.authentication import TokenAuthentication
-from rest_framework import filters, mixins, permissions, status, viewsets
+from rest_framework import filters, status
 from rest_framework.decorators import action 
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import (
-    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, SAFE_METHODS)
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .pagination import PaginationCust
@@ -21,7 +17,7 @@ from .serializers import (
     UserSerializer, TagSerializer, IngredientSerializer, UserSubscriptionsSerializer,
     RecipeReadSerializer, RecipeRecordSerializer, ShortRecipeSerializer
 )
-
+from .utils import add_recipe, delete_recipe
 from recipes.models import (
     Ingredient, Tag, Recipe, Favorite, ShoppingCart)
 from users.models import User, Subscriptions
@@ -97,7 +93,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
      Изменение и создание тэгов разрешено только админам."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    # permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PaginationCust
     
 
@@ -105,7 +101,7 @@ class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
     queryset = Recipe.objects.all()
-    permission_classes = (IsAdminAuthorOrReadOnly,)
+    permission_classes = (IsAdminAuthorOrReadOnly)
     pagination_class = PaginationCust
     # filter_backends
   
@@ -138,7 +134,7 @@ class RecipeViewSet(ModelViewSet):
         if request.method == 'POST':
             return self.add_recipe(ShoppingCart, request.user, pk)
         if request.method == 'DELETE':
-            return self.delete_recipe(ShoppingCart, request.user, pk)
+            return delete_recipe(ShoppingCart, request.user, pk)
  
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов."""

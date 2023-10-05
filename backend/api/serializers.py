@@ -1,14 +1,10 @@
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from rest_framework import serializers
 from django.db.models import F
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.relations import SlugRelatedField
-from rest_framework.exceptions import ValidationError
-from rest_framework.validators import UniqueValidator
-#from djoser.serializers import SetPasswordSerializer
 from drf_extra_fields.fields import Base64ImageField
-
 
 from recipes.models import (
     Ingredient, Tag, Recipe, Favorite, ShoppingCart,CompositionOfDish)
@@ -40,8 +36,8 @@ class UserSerializer(serializers.ModelSerializer):
         user = User(
             username=validated_data['username'],
             email=validated_data['email'],
-            first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
         )
         user.set_password(validated_data['password'])
         user.save()
@@ -225,9 +221,51 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'tags', 
-            'author',
             'ingredients',
+            'author',
+            'name',
             'image', 
             'text',
             'cooking_time',
         )
+
+    def create_composition_of_dish(self, recipe, ingredients):
+        """Cоздание связей между ингредиентами и рецептом. 
+        Входные параметры данной функции включают список
+        ингредиентов (ingredients) и рецепт (recipe)."""
+        compositions = []
+        # Проверяем, что список ingredients не пустой
+        if ingredients:
+            for ingredient in ingredients:
+                composition = CompositionOfDish(
+                    ingredient=Ingredient.objects.get(id=ingredient['id']), 
+                    recipe=recipe, 
+                    amount=ingredient['amount']
+            )
+            compositions.append(composition)
+        CompositionOfDish.objects.bulk_create(compositions)
+
+    def create(self, validated_data):
+        """Создание рецепта с указанными полями.
+        Получаем данные о тегах и ингредиентах.
+        Создаем рецепт и связываем с тегом.""" 
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        self.create_composition_of_dish(recipe=recipe, ingredients=ingredients)
+        return recipe
+
+
+    def update(self, instance, validated_data):
+        """Обновление рецепта."""
+        tags = validated_data.pop('tags', [])
+        ingredients = validated_data.pop('ingredients', [])
+        instance = super().update(instance, validated_data)
+        instance.tags.set(tags)
+        instance.ingredients.clear()
+        self.create_composition_of_dish(recipe=instance, ingredients=ingredients)
+        instance.save()
+        return instance
+        
+    

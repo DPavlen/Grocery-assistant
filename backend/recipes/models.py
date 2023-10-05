@@ -66,7 +66,7 @@ class Recipe(models.Model):
     """Рецепт.Основная модель, у которой есть следующие атрибуты:
     тег рецепта, автор рецепта, ингредиенты рецепта, название рецепта,
     изображение рецепта, описание рецепта, время приготовления блюда."""
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
         verbose_name='Теги',
