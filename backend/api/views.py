@@ -1,14 +1,9 @@
-from django.contrib.auth import authenticate, update_session_auth_hash
-from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework import filters, status
+from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .pagination import PaginationCust
@@ -17,16 +12,16 @@ from .serializers import (
     UserSerializer, TagSerializer, IngredientSerializer, UserSubscriptionsSerializer,
     RecipeReadSerializer, RecipeRecordSerializer, ShortRecipeSerializer
 )
-from .utils import add_recipe, delete_recipe
 from recipes.models import (
     Ingredient, Tag, Recipe, Favorite, ShoppingCart)
 from users.models import User, Subscriptions
 
 
 class CustomUserViewSet(UserViewSet):
-    """Работа с пользователями. Регистрация пользователей,
-     Вывод пользователей. У авторизованных пользователей возможность подписки.
-     Djoser позволяет переходить по endpoints user и токена"""
+    """Работа с пользователями. Регистрация пользователей.
+    Вывод пользователей. У авторизованных пользователей 
+    возможность подписки. Djoser позволяет переходить 
+    по endpoints user и токена."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdminOrReadOnly,)

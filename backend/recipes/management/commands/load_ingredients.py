@@ -18,7 +18,6 @@ class Command(BaseCommand):
         return 'Обработка завершена.'
 
     def import_ingredients_csv(self, file='data/ingredients.csv'):
-        file_path = f'./data{file}'
         with open(file, newline='', encoding='utf-8') as file_all:
             reader = csv.reader(file_all)
             for row in reader:
