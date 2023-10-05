@@ -9,8 +9,9 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from .pagination import PaginationCust
 from .permissions import IsAdminOrReadOnly, IsAdminAuthorOrReadOnly
 from .serializers import (
-    UserSerializer, TagSerializer, IngredientSerializer, UserSubscriptionsSerializer,
-    RecipeReadSerializer, RecipeRecordSerializer, ShortRecipeSerializer
+    UserSerializer, TagSerializer, IngredientSerializer, 
+    UserSubscriptionsSerializer, RecipeReadSerializer, 
+    RecipeRecordSerializer, ShortRecipeSerializer
 )
 from recipes.models import (
     Ingredient, Tag, Recipe, Favorite, ShoppingCart)
@@ -19,8 +20,8 @@ from users.models import User, Subscriptions
 
 class CustomUserViewSet(UserViewSet):
     """Работа с пользователями. Регистрация пользователей.
-    Вывод пользователей. У авторизованных пользователей 
-    возможность подписки. Djoser позволяет переходить 
+    Вывод пользователей. У авторизованных пользователей
+    возможность подписки. Djoser позволяет переходить
     по endpoints user и токена."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -130,7 +131,7 @@ class RecipeViewSet(ModelViewSet):
         if request.method == 'POST':
             return self.add_recipe(ShoppingCart, request.user, pk)
         if request.method == 'DELETE':
-            return delete_recipe(ShoppingCart, request.user, pk)
+            return self.delete_recipe(ShoppingCart, request.user, pk)
 
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов."""

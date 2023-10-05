@@ -1,4 +1,3 @@
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db.models import F
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -7,7 +6,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from drf_extra_fields.fields import Base64ImageField
 
 from recipes.models import (
-    Ingredient, Tag, Recipe, Favorite, ShoppingCart, CompositionOfDish)
+    Ingredient, Tag, Recipe, CompositionOfDish)
 from users.models import User, Subscriptions
 
 
@@ -43,7 +42,8 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def get_is_subscribed(self, author):
-        """Проверка подписки пользователей. Определяет - подписан ли текущий пользователь
+        """Проверка подписки пользователей. 
+        Определяет - подписан ли текущий пользователь
         на просматриваемого пользователя(True or False)."""
         user = self.context.get('request').user
         if user.is_anonymous:

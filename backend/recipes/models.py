@@ -174,7 +174,7 @@ class Favorite(models.Model):
     )
 
     class Meta:
-        ordering = ['user',]
+        ordering = ['user']
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранное'
         constraints = [
@@ -204,7 +204,7 @@ class ShoppingCart(models.Model):
     )
 
     class Meta:
-        ordering = ['user',]
+        ordering = ['user']
         verbose_name = 'Корзина покупок'
         verbose_name_plural = 'Корзина покупок'
         constraints = [
@@ -215,4 +215,4 @@ class ShoppingCart(models.Model):
         ]
 
     def __str__(self):
-        return f'Пользователь {self.user} добавил {self.recipe} в свою Корзину!'
+        return f'Пользователь {self.user} добавил {self.recipe} в Корзину!'
