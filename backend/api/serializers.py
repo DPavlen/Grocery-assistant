@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     def get_is_subscribed(self, author):
-        """Проверка подписки пользователей. 
+        """Проверка подписки пользователей.
         Определяет - подписан ли текущий пользователь
         на просматриваемого пользователя(True or False)."""
         user = self.context.get('request').user
