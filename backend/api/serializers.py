@@ -6,7 +6,8 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from drf_extra_fields.fields import Base64ImageField
 
 from recipes.models import (
-    Ingredient, Tag, Recipe, CompositionOfDish)
+    Ingredient, Tag, Recipe, 
+    CompositionOfDish, ShoppingCart, Favorite)
 from users.models import User, Subscriptions
 
 
@@ -176,16 +177,14 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return user.favorites.filter(recipe=recipe).exists()
-        # return not user.is_anonymous and
-        # user.favorites.filter(recipe=recipe).exists()
+        return Favorite.objects.filter(user=user, recipe=recipe).exists()
 
     def get_is_in_shopping_cart(self, recipe):
         """Проверка - находится ли рецепт в списке  покупок."""
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return user.carts.filter(recipe=recipe).exists()
+        return ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
 
 
 class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
@@ -224,7 +223,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def create_composition_of_dish(self, recipe, ingredients):
+    def create_composition_of_dish(self, ingredients, recipe):
         """Cоздание связей между ингредиентами и рецептом.
         Входные параметры данной функции включают список
         ингредиентов (ingredients) и рецепт (recipe)."""
@@ -245,11 +244,12 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         Получаем данные о тегах и ингредиентах.
         Создаем рецепт и связываем с тегом."""
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredients',[])
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         self.create_composition_of_dish(recipe=recipe, ingredients=ingredients)
         return recipe
+
 
     def update(self, instance, validated_data):
         """Обновление рецепта."""
@@ -262,3 +262,11 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
             recipe=instance, ingredients=ingredients)
         instance.save()
         return instance
+
+    
+    def to_representation(self, instance):
+        """Преоразование ингредиентов в словарь с данными
+        из списка словарей, в Рецепте."""
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeReadSerializer(instance, context=context).data
