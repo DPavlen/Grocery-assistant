@@ -7,7 +7,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from drf_extra_fields.fields import Base64ImageField
 
 from recipes.models import (
-    Ingredient, Tag, Recipe, Favorite, ShoppingCart,CompositionOfDish)
+    Ingredient, Tag, Recipe, Favorite, ShoppingCart, CompositionOfDish)
 from users.models import User, Subscriptions
 
 
@@ -27,9 +27,8 @@ class UserSerializer(serializers.ModelSerializer):
             'is_subscribed',
             'password',
         )
-        # поле "password" будет доступно только для записи 
+        # поле "password" будет доступно только для записи
         extra_kwargs = {'password': {'write_only': True}}
-                        
 
     def create(self, validated_data):
         """Создание нового пользователя с указанными полями."""
@@ -42,8 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-    
-    
+
     def get_is_subscribed(self, author):
         """Проверка подписки пользователей. Определяет - подписан ли текущий пользователь
         на просматриваемого пользователя(True or False)."""
@@ -51,10 +49,10 @@ class UserSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return Subscriptions.objects.filter(user=user, author=author).exists()
-    
+
 
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
-    """Сериализатор для подписок пользователя. 
+    """Сериализатор для подписок пользователя.
     Выводится текущий пользователь."""
     recipes_count = SerializerMethodField()
     recipes = SerializerMethodField()
@@ -71,20 +69,19 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
             'recipes_count',
         )
 
-
     def get_recipes(self, author):
         """Количество рецептов, связанных с текущим автором."""
         return author.recipes.count()
-    
 
     def get_recipes_count(self, author):
         """Получить количество рецептов для данного автора."""
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        recipes = author.recipes.all()[:int(limit)] if limit else author.recipes.all()
-        serializer = ShortRecipeSerializer(recipes, many=True, read_only= True)
+        recipes = author.recipes.all()[
+            :int(limit)] if limit else author.recipes.all()
+        serializer = ShortRecipeSerializer(recipes, many=True, read_only=True)
         return serializer.data
-    
+
     def validate(self, data):
         """Проверка на повторную подписку к существующему пользователю.
         Проверка на подписку самого себя."""
@@ -93,13 +90,12 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         if Subscriptions.objects.filter(author=author, user=user).exists():
             raise ValidationError(
                 'Вы уже подписаны на этого пользователя себя!'
-                )
+            )
         if user == author:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя!'
             )
         return data
-    
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -123,10 +119,10 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = (
             'id',
-            'name', 
+            'name',
             'slug',
             'color',
-        )      
+        )
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -135,13 +131,13 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
         fields = (
             'id',
-            'name', 
+            'name',
             'measurement_unit',
-        )      
+        )
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения Рецептов 
+    """Сериализатор для получения Рецептов
     и связанных с ним списка покупок и избранного.Только чтение."""
     tags = TagSerializer(many=True, read_only=True)
     author = UserSerializer(read_only=True)
@@ -154,16 +150,16 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = (
             'id',
-            'tags', 
+            'tags',
             'author',
             'ingredients',
-            'image', 
+            'image',
             'text',
             'cooking_time',
             'is_favorited',
             'is_in_shopping_cart',
         )
-    
+
     def get_ingredients(self, obj):
         """Получает список ингридиентов для рецепта."""
         recipe = obj
@@ -175,15 +171,14 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
         return ingredients
 
-
     def get_is_favorited(self, recipe):
         """Проверка - находится ли рецепт в избранном."""
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
         return user.favorites.filter(recipe=recipe).exists()
-        # return not user.is_anonymous and user.favorites.filter(recipe=recipe).exists()
-
+        # return not user.is_anonymous and
+        # user.favorites.filter(recipe=recipe).exists()
 
     def get_is_in_shopping_cart(self, recipe):
         """Проверка - находится ли рецепт в списке  покупок."""
@@ -191,7 +186,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return user.carts.filter(recipe=recipe).exists()
-    
+
 
 class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Сотава блюда."""
@@ -202,11 +197,11 @@ class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'amount',
-        )      
+        )
 
 
 class RecipeRecordSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения Рецептов 
+    """Сериализатор для получения Рецептов
     и связанных с ним списка покупок и избранного.Запись.
     У одого рецепта может быть несолько связанных тегов(набор)."""
     id = IntegerField(read_only=True)
@@ -220,17 +215,17 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = (
             'id',
-            'tags', 
+            'tags',
             'ingredients',
             'author',
             'name',
-            'image', 
+            'image',
             'text',
             'cooking_time',
         )
 
     def create_composition_of_dish(self, recipe, ingredients):
-        """Cоздание связей между ингредиентами и рецептом. 
+        """Cоздание связей между ингредиентами и рецептом.
         Входные параметры данной функции включают список
         ингредиентов (ingredients) и рецепт (recipe)."""
         compositions = []
@@ -238,24 +233,23 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         if ingredients:
             for ingredient in ingredients:
                 composition = CompositionOfDish(
-                    ingredient=Ingredient.objects.get(id=ingredient['id']), 
-                    recipe=recipe, 
+                    ingredient=Ingredient.objects.get(id=ingredient['id']),
+                    recipe=recipe,
                     amount=ingredient['amount']
-            )
+                )
             compositions.append(composition)
         CompositionOfDish.objects.bulk_create(compositions)
 
     def create(self, validated_data):
         """Создание рецепта с указанными полями.
         Получаем данные о тегах и ингредиентах.
-        Создаем рецепт и связываем с тегом.""" 
+        Создаем рецепт и связываем с тегом."""
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         self.create_composition_of_dish(recipe=recipe, ingredients=ingredients)
         return recipe
-
 
     def update(self, instance, validated_data):
         """Обновление рецепта."""
@@ -264,8 +258,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_composition_of_dish(recipe=instance, ingredients=ingredients)
+        self.create_composition_of_dish(
+            recipe=instance, ingredients=ingredients)
         instance.save()
         return instance
-        
-    

@@ -15,10 +15,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Subscription',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_sub', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания подписки')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='Subscribers', to=settings.AUTH_USER_MODEL, verbose_name='Автор рецепта')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='Subscriptions', to=settings.AUTH_USER_MODEL, verbose_name='Подписчики')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('date_sub', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Дата создания подписки')),
+                ('author',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='Subscribers',
+                                   to=settings.AUTH_USER_MODEL,
+                                   verbose_name='Автор рецепта')),
+                ('user',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='Subscriptions',
+                                   to=settings.AUTH_USER_MODEL,
+                                   verbose_name='Подписчики')),
             ],
             options={
                 'verbose_name': 'Подписка',

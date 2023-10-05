@@ -42,7 +42,7 @@ class User(AbstractUser):
     password = models.CharField(
         'Пароль пользователя',
         max_length=150,
-        #required=True,
+        # required=True,
     )
     role = models.TextField(
         'Пользовательская роль юзера',
@@ -70,7 +70,7 @@ class Subscriptions(models.Model):
     date_sub(datetime): Дата подписки.
     '''
     author = models.ForeignKey(
-        User, 
+        User,
         verbose_name='Автор рецепта',
         related_name='subscribe',
         on_delete=models.CASCADE,
@@ -80,7 +80,7 @@ class Subscriptions(models.Model):
         verbose_name='Подписчик',
         related_name='subscription',
         on_delete=models.CASCADE,
-    )    
+    )
     date_sub = models.DateTimeField(
         verbose_name='Дата создания подписки',
         auto_now_add=True,
@@ -98,5 +98,3 @@ class Subscriptions(models.Model):
 
     def __str__(self):
         return f'{self.user.username} подписан на {self.author.username}'
-    
-

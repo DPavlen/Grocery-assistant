@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import filters, status
-from rest_framework.decorators import action 
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
@@ -23,7 +23,6 @@ from recipes.models import (
 from users.models import User, Subscriptions
 
 
- 
 class CustomUserViewSet(UserViewSet):
     """Работа с пользователями. Регистрация пользователей,
      Вывод пользователей. У авторизованных пользователей возможность подписки.
@@ -36,7 +35,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
-    )  
+    )
     def subscriptions(self, request):
         """Просмотр подписок на авторов.Мои подписки."""
         user = request.user
@@ -68,7 +67,8 @@ class CustomUserViewSet(UserViewSet):
             )
             serializer.is_valid(raise_exception=True)
             Subscriptions.objects.create(user=user, author=author)
-            return Response('Подписка оформлена', status=status.HTTP_204_NO_CONTENT)
+            return Response('Подписка оформлена',
+                            status=status.HTTP_204_NO_CONTENT)
 
         if request.method == 'DELETE':
             subscription = get_object_or_404(
@@ -77,8 +77,9 @@ class CustomUserViewSet(UserViewSet):
                 author=author
             )
             subscription.delete()
-            return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
-    
+            return Response('Подписка удалена',
+                            status=status.HTTP_204_NO_CONTENT)
+
 
 class TagViewSet(ReadOnlyModelViewSet):
     """Работа с Тегами. Получить список всех тегов.
@@ -86,7 +87,7 @@ class TagViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOrReadOnly,)
-   
+
 
 class IngredientViewSet(ReadOnlyModelViewSet):
     """Работа с Тегами. Получить список всех тегов.
@@ -95,7 +96,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PaginationCust
-    
+
 
 class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
@@ -104,19 +105,19 @@ class RecipeViewSet(ModelViewSet):
     permission_classes = (IsAdminAuthorOrReadOnly)
     pagination_class = PaginationCust
     # filter_backends
-  
+
     def perform_create(self, serializer, **kwargs):
         serializer.save(author=self.request.user)
 
     def get_serializer_class(self):
-        return (RecipeReadSerializer if self.request.method in SAFE_METHODS 
+        return (RecipeReadSerializer if self.request.method in SAFE_METHODS
                 else RecipeRecordSerializer)
-    
+
     @action(
         detail=True,
         methods=['delete', 'post'],
         permission_classes=[IsAuthenticated],
-    )  
+    )
     def favorite(self, request, pk):
         """Добавление или удаление рецептов в раздел Избранное."""
         if request.method == 'POST':
@@ -128,25 +129,25 @@ class RecipeViewSet(ModelViewSet):
         detail=True,
         methods=['delete', 'post'],
         permission_classes=[IsAuthenticated],
-    )  
+    )
     def shopping_сart(self, request, pk):
         """Добавление или удаление рецептов в раздел Корзина покупок."""
         if request.method == 'POST':
             return self.add_recipe(ShoppingCart, request.user, pk)
         if request.method == 'DELETE':
             return delete_recipe(ShoppingCart, request.user, pk)
- 
+
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов."""
         if models.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'Ошибка': 'Рецепт уже был добавлен!'}, 
+            return Response({'Ошибка': 'Рецепт уже был добавлен!'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=pk)
         models.objects.create(user=user, recipe=recipe)
         serializer = ShortRecipeSerializer(recipe)
-        
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     def delete_recipe(self, models, user, pk):
         """Метод удаления рецепта."""
         try:
@@ -154,8 +155,5 @@ class RecipeViewSet(ModelViewSet):
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except models.DoesNotExist:
-            return Response({'Ошибка': 'Рецепт уже был удален!'}, 
+            return Response({'Ошибка': 'Рецепт уже был удален!'},
                             status=status.HTTP_400_BAD_REQUEST)
-    
-
-

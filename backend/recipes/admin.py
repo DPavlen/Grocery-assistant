@@ -2,13 +2,14 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from recipes.models import (Ingredient, Tag, Recipe, CompositionOfDish, 
+from recipes.models import (Ingredient, Tag, Recipe, CompositionOfDish,
                             Favorite, ShoppingCart)
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Тегов."""
+
     list_display = (
         'id',
         'name',
@@ -22,6 +23,7 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Тегов."""
+
     list_display = (
         'id',
         'author',
@@ -37,6 +39,7 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(CompositionOfDish)
 class CompositionOfDishAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Состав блюда."""
+
     list_display = (
         'id',
         'recipe',
@@ -44,8 +47,7 @@ class CompositionOfDishAdmin(admin.ModelAdmin):
         'amount',
     )
     search_fields = ('ingredient',)
-    list_filter = ('id','recipe', 'ingredient', 'amount')
-
+    list_filter = ('id', 'recipe', 'ingredient', 'amount')
 
 
 class IngredientResource(resources.ModelResource):
@@ -61,14 +63,16 @@ class IngredientResource(resources.ModelResource):
 class IngredientAdmin(ImportExportModelAdmin):
     resource_classes = [IngredientResource]
 
+
 admin.site.register(Ingredient, IngredientAdmin)
 
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     """Настроенная админ-панель избранные рецепты у пользователей."""
+
     list_display = (
-        'user', 
+        'user',
         'recipe'
     )
     list_filter = ('user', 'recipe')
@@ -78,8 +82,9 @@ class FavoriteAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     """Настроенная админ-панель корзин покупок у пользователей."""
+
     list_display = (
-        'recipe', 
+        'recipe',
         'user'
     )
     list_filter = ('recipe', 'user')

@@ -21,23 +21,43 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='first_name',
-            field=models.CharField(default=1, max_length=254, unique=True, verbose_name='Имя пользователя'),
+            field=models.CharField(
+                default=1,
+                max_length=254,
+                unique=True,
+                verbose_name='Имя пользователя'),
             preserve_default=False,
         ),
         migrations.AlterField(
             model_name='user',
             name='last_name',
-            field=models.CharField(default=1, max_length=254, unique=True, verbose_name='Фамилия пользователя'),
+            field=models.CharField(
+                default=1,
+                max_length=254,
+                unique=True,
+                verbose_name='Фамилия пользователя'),
             preserve_default=False,
         ),
         migrations.AlterField(
             model_name='user',
             name='password',
-            field=models.CharField(max_length=128, verbose_name='Пароль пользователя'),
+            field=models.CharField(
+                max_length=128,
+                verbose_name='Пароль пользователя'),
         ),
         migrations.AlterField(
             model_name='user',
             name='role',
-            field=models.TextField(choices=[('user', 'User'), ('moderator', 'Moderator'), ('admin', 'Admin')], default='user', max_length=50, verbose_name='Пользовательская роль юзера'),
+            field=models.TextField(
+                choices=[
+                    ('user',
+                     'User'),
+                    ('moderator',
+                     'Moderator'),
+                    ('admin',
+                     'Admin')],
+                default='user',
+                max_length=50,
+                verbose_name='Пользовательская роль юзера'),
         ),
     ]

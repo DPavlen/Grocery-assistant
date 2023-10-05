@@ -13,16 +13,25 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='compositionofdish',
-            options={'verbose_name': 'Состав блюда | Ингредиент в рецепте', 'verbose_name_plural': 'Состав блюда | Ингредиенты в рецепте'},
+            options={
+                'verbose_name': 'Состав блюда | Ингредиент в рецепте',
+                'verbose_name_plural': 'Состав блюда | Ингредиенты в рецепте'},
         ),
         migrations.AlterField(
             model_name='compositionofdish',
             name='ingredient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipes.ingredient', verbose_name='Ингредиенты в рецепте'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to='recipes.ingredient',
+                verbose_name='Ингредиенты в рецепте'),
         ),
         migrations.AlterField(
             model_name='compositionofdish',
             name='recipe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='composition_list', to='recipes.recipe', verbose_name='Рецепты'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='composition_list',
+                to='recipes.recipe',
+                verbose_name='Рецепты'),
         ),
     ]

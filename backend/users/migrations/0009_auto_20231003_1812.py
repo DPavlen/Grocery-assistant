@@ -15,10 +15,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Subscriptions',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_sub', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания подписки')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscribe', to=settings.AUTH_USER_MODEL, verbose_name='Автор рецепта')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscription', to=settings.AUTH_USER_MODEL, verbose_name='Подписчик')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('date_sub', models.DateTimeField(
+                    auto_now_add=True, verbose_name='Дата создания подписки')),
+                ('author',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='subscribe',
+                                   to=settings.AUTH_USER_MODEL,
+                                   verbose_name='Автор рецепта')),
+                ('user',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                   related_name='subscription',
+                                   to=settings.AUTH_USER_MODEL,
+                                   verbose_name='Подписчик')),
             ],
             options={
                 'verbose_name': 'Подписка',
@@ -31,6 +41,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='subscriptions',
-            constraint=models.UniqueConstraint(fields=('user', 'author'), name='unique_subscription'),
+            constraint=models.UniqueConstraint(
+                fields=('user', 'author'), name='unique_subscription'),
         ),
     ]

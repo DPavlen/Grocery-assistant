@@ -4,9 +4,11 @@ from django.core.management.base import BaseCommand
 
 from recipes.models import Ingredient
 
+
 class Command(BaseCommand):
     """Команда python manage.py 'load_ingredients' загружает ингредиенты
     в базу из csv файла, который располагается в директории /data/... ."""
+
     def handle(self, *args: Any, **options: Any) -> str:
         try:
             self.import_ingredients_csv()
@@ -23,4 +25,4 @@ class Command(BaseCommand):
                 status, created = Ingredient.objects.update_or_create(
                     name=row[0],
                     measurement_unit=row[1]
-                ) 
+                )

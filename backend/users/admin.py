@@ -26,6 +26,7 @@ class UsersAdmin(BaseAdminSettings):
 
 admin.site.register(User, UsersAdmin)
 
+
 @admin.register(Subscriptions)
 class SubscriptionAdmin(admin.ModelAdmin):
     """Настроенная панель (управление подписками)."""

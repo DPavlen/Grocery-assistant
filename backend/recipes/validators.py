@@ -11,6 +11,4 @@ class SlugValidator(RegexValidator):
         буквы (строчные и заглавные), цифры, дефисы и подчеркивания.'
         f'Длина не более {max_length} символов'
     )
-    code='invalid_slug'
-
-
+    code = 'invalid_slug'

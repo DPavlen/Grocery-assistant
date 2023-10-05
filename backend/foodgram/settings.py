@@ -121,16 +121,18 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    'LOGIN_FIELD': 'email',  # поле, используемое для авторизации (вместо стандартного 'username')
+    # поле, используемое для авторизации (вместо стандартного 'username')
+    'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     # 'USER_CREATE_PASSWORD_RETYPE': True,  # требовать повторного ввода пароля при регистрации
 
     'SERIALIZERS': {
-                                      # UserSerializer
+        # UserSerializer
         'user': 'api.serializers.UserSerializer',
         'user_create': 'api.serializers.UserSerializer',
         'current_user': 'api.serializers.UserSerializer',
-        'token': 'djoser.serializers.TokenSerializer',  # указание используемого сериалайзера для токена
+        # указание используемого сериалайзера для токена
+        'token': 'djoser.serializers.TokenSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer',
     },
 
@@ -171,9 +173,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
 # Время приготовления
-MIN_COOKING_TIME = 1 
+MIN_COOKING_TIME = 1
 MAX_COOKING_TIME = 600
-
- 
