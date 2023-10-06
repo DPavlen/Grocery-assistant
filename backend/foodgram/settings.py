@@ -1,26 +1,24 @@
-# import os
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = os.getenv('SECRET_KEY', 
+    'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', "*").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    # 'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -123,7 +121,6 @@ DJOSER = {
     # поле, используемое для авторизации (вместо стандартного 'username')
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
-    # 'USER_CREATE_PASSWORD_RETYPE': True,  # требовать повторного ввода пароля при регистрации
 
     'SERIALIZERS': {
         # UserSerializer
@@ -140,14 +137,6 @@ DJOSER = {
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     },
 }
-
-# JWT_AUTH = {
-#     'JWT_PAYLOAD_HANDLER':
-#     'rest_framework_jwt.utils.jwt_payload_handler',
-#     'JWT_ENCODE_HANDLER':
-#     'rest_framework_jwt.utils.jwt_encode_handler',
-
-# }
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -170,11 +159,6 @@ STATIC_URL = '/static/'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# Время приготовления
-MIN_COOKING_TIME = 1
-MAX_COOKING_TIME = 600
 
 
 # MEDIA_URL = '/media/'

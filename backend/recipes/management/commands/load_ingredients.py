@@ -13,9 +13,10 @@ class Command(BaseCommand):
         try:
             self.import_ingredients_csv()
             print('Загрузка ингредиентов произошла успешно!')
-        except Exception as e:
-            print('Ошибка при загрузке ингредиентов:', str(e))
-        return 'Обработка завершена.'
+        except Exception:
+            raise ('Ошибка при загрузке ингредиентов:')
+            
+        return 'Обработка файла завершена.'
 
     def import_ingredients_csv(self, file='data/ingredients.csv'):
         with open(file, newline='', encoding='utf-8') as file_all:
@@ -23,9 +24,6 @@ class Command(BaseCommand):
             for row in reader:
                 name, measurement_unit, *_ = row
                 status, created = Ingredient.objects.update_or_create(
-                    # name, measurement_unit, *_ = row, 
                     name=name,
                     measurement_unit=measurement_unit
-                    # name=row[0],
-                    # measurement_unit=row[1]
                 )

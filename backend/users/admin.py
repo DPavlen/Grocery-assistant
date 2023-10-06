@@ -9,6 +9,7 @@ class BaseAdminSettings(admin.ModelAdmin):
     list_filter = ('email', 'username')
 
 
+@admin.register(User)
 class UsersAdmin(BaseAdminSettings):
     """Настроенная панель админки (управление пользователями)."""
     list_display = (
@@ -21,9 +22,6 @@ class UsersAdmin(BaseAdminSettings):
     )
     list_display_links = ('id', 'username')
     search_fields = ('username', 'role')
-
-
-admin.site.register(User, UsersAdmin)
 
 
 @admin.register(Subscriptions)

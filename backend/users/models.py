@@ -2,57 +2,50 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint
 
-# from users.validators import UsernameValidatorRegex, username_me
+from .lenght import SizeField
 
 
 class User(AbstractUser):
-    '''Кастомная модель переопределенного юзера.
-    При создании пользователя все поля обязательны для заполнения.'''
+    """Кастомная модель переопределенного юзера.
+    При создании пользователя все поля обязательны для заполнения."""
     class RoleChoises(models.TextChoices):
-        '''Определение роли юзера.'''
+        """Определение роли юзера."""
         USER = 'user'
         MODERATOR = 'moderator'
         ADMIN = 'admin'
 
     email = models.EmailField(
         blank=True,
-        max_length=254,
+        max_length=SizeField.MAX_LENGHT_EMAIL.value,
         unique=True,
         verbose_name='email address',
-        # required=True,
     )
     username = models.CharField(
         'Логин пользователя',
-        max_length=150,
+        max_length=SizeField.MAX_LENGHT_USERNAME.value,
         unique=True,
-        # required=True,
     )
     first_name = models.CharField(
         'Имя пользователя',
-        max_length=150,
+        max_length=SizeField.MAX_LENGHT_FIRST_NAME.value,
         blank=True,
-        # required=True,
     )
     last_name = models.CharField(
         'Фамилия пользователя',
-        max_length=150,
+        max_length=SizeField.MAX_LENGHT_LAST_NAME.value,
         blank=True,
-        # required=True,
     )
     password = models.CharField(
         'Пароль пользователя',
-        max_length=150,
-        # required=True,
+        max_length=SizeField.MAX_LENGHT_PASSWORD.value,
     )
     role = models.TextField(
         'Пользовательская роль юзера',
         choices=RoleChoises.choices,
         default=RoleChoises.USER,
-        max_length=50
+        max_length=SizeField.MAX_LENGHT_ROLE.value,
     )
 
-    # REQUIRED_FIELDS = ['email']
-    # USERNAME_FIELDS = 'email'
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -64,11 +57,11 @@ class User(AbstractUser):
 
 
 class Subscriptions(models.Model):
-    '''Подписки пользователей на друг друга.
+    """Подписки пользователей на друг друга.
     author(int): Автор рецепта. Связь через ForeignKey.
     user(int): Подписчик. Cвязь через ForeignKey.
-    date_sub(datetime): Дата подписки.
-    '''
+    date_sub(datetime): Дата подписки."""
+
     author = models.ForeignKey(
         User,
         verbose_name='Автор рецепта',

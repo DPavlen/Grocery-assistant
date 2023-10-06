@@ -3,8 +3,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from foodgram.settings import MIN_COOKING_TIME, MAX_COOKING_TIME
 from recipes.validators import SlugValidator
+from recipes.utils import Lenght
 from users.models import User
 
 
@@ -13,13 +13,11 @@ class Ingredient(models.Model):
     Один ингредиент может быть у многих рецептов."""
     name = models.CharField(
         verbose_name='Название ингредиента для рецепта',
-        max_length=256,
-        # required = True
+        max_length=Lenght.MAX_LENGT_NAME.value,
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
-        max_length=50,
-        # required = True
+        max_length=Lenght.MAX_LENGT_MEASUREMENT_UNIT.value,
     )
 
     class Meta:
@@ -36,9 +34,8 @@ class Tag(models.Model):
     Один тег может быть у многих рецептов."""
     name = models.CharField(
         verbose_name='Название тега для рецепта',
-        max_length=256,
+        max_length=Lenght.MAX_LENGT_NAME,
         unique=True,
-        # required = True
     )
     color = ColorField(
         verbose_name='Цвет в формате HEX',
@@ -48,7 +45,7 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         verbose_name='Slug названия тега',
-        max_length=150,
+        max_length=Lenght.MAX_LENGT_NAME_SLUG,
         unique=True,
         validators=[SlugValidator],
     )
@@ -71,52 +68,46 @@ class Recipe(models.Model):
         Tag,
         related_name='recipes',
         verbose_name='Теги',
-        # required=True
     )
     author = models.ForeignKey(
         User,
         related_name='recipes',
         on_delete=models.CASCADE,
         verbose_name='Автор публикации рецепта',
-        # required=True
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         related_name='recipes',
         verbose_name='Состав блюда',
         through='recipes.CompositionOfDish',
-        # required=True
     )
     name = models.CharField(
         verbose_name='Название рецепта',
-        max_length=256,
+        max_length=Lenght.MAX_LENGT_NAME.value,
         db_index=True,
-        # required=True
     )
     image = models.ImageField(
         verbose_name='Изображение рецепта',
         blank=True,
         upload_to='recipes/images',
-        help_text='Добавте рецепт',
-        # required=True
+        help_text='Добавьте рецепт',
     )
     text = models.TextField(
         verbose_name='Описание рецепта',
         help_text='Введите Описание рецепта'
-        # required=True
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления блюда',
         help_text='Ввведите время приготовления блюда',
         validators=[
             MinValueValidator(
-                MIN_COOKING_TIME,
+                Lenght.MIN_COOKING_TIME.value,
                 message=f'Время приготовления блюда должно '
-                        f'быть не менее {MIN_COOKING_TIME} минут.'),
+                        f'быть не менее {Lenght.MIN_COOKING_TIME.value} минут.'),
             MaxValueValidator(
-                MAX_COOKING_TIME,
+                Lenght.MAX_COOKING_TIME,
                 message=f'Время приготовления блюда не превышает '
-                        f'более {MAX_COOKING_TIME} минут.'),
+                        f'более {Lenght.MAX_COOKING_TIME.value} минут.'),
         ]
     )
 
@@ -141,16 +132,24 @@ class CompositionOfDish(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        # related_name='list_of_dish',
         verbose_name='Ингредиенты в рецепте'
     )
     amount = models.SmallIntegerField(
         verbose_name='Количество ингредиентов',
         default=1,
+        validators=[
+            MinValueValidator(
+                Lenght.MIN_AMOUNT_INREDIENT,
+                message=f'Минимальное количество ингредиетов в блюде '
+                        f'должно быть не меньше {Lenght.MIN_AMOUNT_INREDIENT}.'),
+            MaxValueValidator(
+                Lenght.MAX_AMOUNT_INREDIENT,
+                message=f'Максимально количество ингредиетов в блюде '
+                        f'не превышает {Lenght.MAX_AMOUNT_INREDIENT}.'),
+        ]
     )
 
     class Meta:
-        # default_related_name = 'composition_of_dish'
         verbose_name = 'Состав блюда | Ингредиент в рецепте'
         verbose_name_plural = 'Состав блюда | Ингредиенты в рецепте'
 
