@@ -9,11 +9,9 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from api.pagination import PaginationCust
 from api.permissions import IsAdminOrReadOnly, IsAdminAuthorOrReadOnly
 from api.serializers import ( TagSerializer, IngredientSerializer, 
-    RecipeReadSerializer,RecipeRecordSerializer,)
+    RecipeReadSerializer,RecipeRecordSerializer, ShortRecipeSerializer)
 from recipes.models import (
-    Ingredient, Tag, Recipe, Favorite, ShoppingCart, CompositionOfDish)
-from users.serializers import (
-    UserSerializer, UserSubscriptionsSerializer, ShortRecipeSerializer)
+    Ingredient, Tag, Recipe, Favorite, ShoppingCart)
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -50,47 +48,46 @@ class RecipeViewSet(ModelViewSet):
 
     @action(
         detail=True,
-        methods=['delete', 'post'],
+        methods=['post'],
         permission_classes=[IsAuthenticated],
     )
     def favorite(self, request, pk):
-        """Добавление или удаление рецептов в раздел Избранное."""
-        if request.method == 'POST':
-            return self.add_recipe(Favorite, request.user, pk)
-        if request.method == 'DELETE':
-            return self.delete_recipe(Favorite, request.user, pk)
+        """Добавление рецептов в раздел Избранное."""
+        return self.add_recipe(Favorite, request.user, pk)
+    
+    @favorite.mapping.delete
+    def delete_favorite(self, request, pk):
+        """Удаление рецептов из раздела Избранное."""    
+        return self.delete_recipe(Favorite, request.user, pk)
 
     @action(
         detail=True,
-        methods=['delete', 'post'],
+        methods=['post'],
         permission_classes=[IsAuthenticated],
     )
     def shopping_сart(self, request, pk):
-        """Добавление или удаление рецептов в раздел Корзина покупок."""
-        if request.method == 'POST':
-            return self.add_recipe(ShoppingCart, request.user, pk)
-        if request.method == 'DELETE':
-            return self.delete_recipe(ShoppingCart, request.user, pk)
+        """Добавление рецептов в раздел Корзина покупок."""
+        return self.add_recipe(ShoppingCart, request.user, pk)
+    
+    @shopping_сart.mapping.delete
+    def delete_shopping_сart(self, request, pk):
+        """Удаление рецептов в раздел Корзина покупок."""
+        return self.delete_recipe(ShoppingCart, request.user, pk)
 
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов."""
-        if models.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'Ошибка': 'Рецепт уже был добавлен!'},
-                            status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=pk)
+        if models.objects.filter(user=user, recipe=recipe).exists():
+            return Response({'Ошибка': 'Рецепт уже добавлен!'},
+                        status=status.HTTP_400_BAD_REQUEST)
         models.objects.create(user=user, recipe=recipe)
         serializer = ShortRecipeSerializer(recipe)
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe(self, models, user, pk):
         """Метод удаления рецепта."""
-        try:
-            obj = models.objects.get(user=user, recipe__id=pk)
-            obj.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except models.DoesNotExist:
-            return Response({'Ошибка': 'Рецепт уже был удален!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        obj = get_object_or_404(models, user=user, recipe__id=pk)
+        obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-
+    

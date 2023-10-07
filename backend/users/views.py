@@ -21,15 +21,46 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = UserSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PaginationCust
+    link_model = Subscriptions
 
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[IsAuthenticated],
+    )
+    def subscribe(self, request, id):
+        """Подписка на автора рецептов."""
+        user = request.user
+        author_id = self.kwargs.get('id')
+        author = get_object_or_404(User, id=author_id)
+        serializer = UserSubscriptionsSerializer(
+                author,
+                data=request.data,
+                context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        Subscriptions.objects.create(user=user, author=author)
+        return Response('Подписка оформлена',
+                            status=status.HTTP_204_NO_CONTENT)
+    
+    @subscribe.mapping.delete
+    def delete_subscribe(self, request, id):
+        """Отписка от автора рецептов."""
+        subscription = get_object_or_404(
+            Subscriptions,
+            user=request.user,
+            author=get_object_or_404(User, id=self.kwargs.get('id'))
+        )
+        subscription.delete()
+        return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
+     
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
     )
     def subscriptions(self, request):
         """Просмотр подписок на авторов.Мои подписки."""
-        user = request.user
-        queryset = User.objects.filter(subscribe__user=user)
+        queryset = User.objects.filter(subscribe__user=request.user)
         pages = self.paginate_queryset(queryset)
         serializer = UserSubscriptionsSerializer(
             pages,
@@ -37,35 +68,3 @@ class CustomUserViewSet(UserViewSet):
             context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
-
-    @action(
-        detail=True,
-        methods=['get', 'delete', 'post'],
-        permission_classes=[IsAuthenticated],
-    )
-    def subscribe(self, request, **kwargs):
-        """Подписка или отписка от автора рецептов."""
-        user = request.user
-        author_id = self.kwargs.get('id')
-        author = get_object_or_404(User, id=author_id)
-
-        if request.method == 'POST':
-            serializer = UserSubscriptionsSerializer(
-                author,
-                data=request.data,
-                context={'request': request}
-            )
-            serializer.is_valid(raise_exception=True)
-            Subscriptions.objects.create(user=user, author=author)
-            return Response('Подписка оформлена',
-                            status=status.HTTP_204_NO_CONTENT)
-
-        if request.method == 'DELETE':
-            subscription = get_object_or_404(
-                Subscriptions,
-                user=user,
-                author=author
-            )
-            subscription.delete()
-            return Response('Подписка удалена',
-                            status=status.HTTP_204_NO_CONTENT)

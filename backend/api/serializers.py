@@ -5,6 +5,7 @@ from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from drf_extra_fields.fields import Base64ImageField
 
+from core.constants import Lenght
 from recipes.models import (
     Ingredient, Tag, Recipe, 
     CompositionOfDish, ShoppingCart, Favorite)
@@ -43,6 +44,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
+    cooking_time = SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -82,6 +84,18 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
+
+    def get_cooking_time(self, recipe):
+        """Проверка на время приготовления."""
+        if recipe.cooking_time < Lenght.MIN_COOKING_TIME.value:
+            raise serializers.ValidationError(
+                f'Время приготовления блюда должно быть не менее '
+                f'{Lenght.MIN_COOKING_TIME.value} минут.')
+        elif recipe.cooking_time > Lenght.MAX_COOKING_TIME.value:
+            raise serializers.ValidationError(
+                f'Время приготовления блюда не должно превышать ' 
+                f'{Lenght.MAX_COOKING_TIME.value} минут.')
+        return recipe.cooking_time
 
 
 class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
@@ -125,14 +139,12 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         Входные параметры данной функции включают список
         ингредиентов (ingredients) и рецепт (recipe)."""
         compositions = []
-        # Проверяем, что список ingredients не пустой
-        if ingredients:
-            for ingredient in ingredients:
-                composition = CompositionOfDish(
-                    ingredient=Ingredient.objects.get(id=ingredient['id']),
-                    recipe=recipe,
-                    amount=ingredient['amount']
-                )
+        for ingredient in ingredients:
+            composition = CompositionOfDish(
+                ingredient=Ingredient.objects.get(id=ingredient['id']),    
+                recipe=recipe,
+                amount=ingredient['amount']
+            )
             compositions.append(composition)
         CompositionOfDish.objects.bulk_create(compositions)
 
@@ -152,11 +164,11 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         """Обновление рецепта."""
         tags = validated_data.pop('tags', [])
         ingredients = validated_data.pop('ingredients', [])
-        instance = super().update(instance, validated_data)
         instance.tags.set(tags)
         instance.ingredients.clear()
         self.create_composition_of_dish(
             recipe=instance, ingredients=ingredients)
+        instance = super().update(instance, validated_data)
         instance.save()
         return instance
 
@@ -175,7 +187,7 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
 
     class Meta:
-        model = 'Recipe'
+        model = Recipe
         fields = (
             'id',
             'name',

@@ -11,7 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для создания переопределенного Usera и
     проверки просмотра подписок."""
     is_subscribed = SerializerMethodField()
-
     class Meta:
         model = User
         fields = (
@@ -36,15 +35,17 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+    
 
-    def get_is_subscribed(self, author):
-        """Проверка подписки пользователей.
-        Определяет - подписан ли текущий пользователь
-        на просматриваемого пользователя(True or False)."""
-        user = self.context.get('request').user
-        if user.is_anonymous:
-            return False
-        return Subscriptions.objects.filter(user=user, author=author).exists()
+    def get_is_subscribed(self, author): 
+        """Проверка подписки пользователей. 
+        Определяет - подписан ли текущий пользователь 
+        на просматриваемого пользователя(True or False).""" 
+        user = self.context.get('request').user 
+        if user.is_anonymous:     
+            return False 
+        return Subscriptions.objects.filter(user=user, author=author).exists() 
+
 
 
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
