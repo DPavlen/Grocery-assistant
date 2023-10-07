@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
@@ -52,7 +51,6 @@ class User(AbstractUser):
         default=RoleChoises.USER,
         max_length=Lenght.MAX_LENGHT_ROLE.value,
     )
-
 
     class Meta:
         verbose_name = 'Пользователь'

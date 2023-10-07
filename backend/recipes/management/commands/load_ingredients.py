@@ -15,7 +15,7 @@ class Command(BaseCommand):
             print('Загрузка ингредиентов произошла успешно!')
         except Exception:
             raise ('Ошибка при загрузке ингредиентов:')
-            
+
         return 'Обработка файла завершена.'
 
     def import_ingredients_csv(self, file='data/ingredients.csv'):

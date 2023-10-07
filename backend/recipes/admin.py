@@ -53,7 +53,7 @@ class CompositionOfDishAdmin(admin.ModelAdmin):
 class IngredientResource(resources.ModelResource):
     """Настроенная админ-панель ингредиентов.
     Возможность сделать import и export файлов csv,json."""
-    
+
     class Meta:
         model = Ingredient
         fields = (
@@ -61,6 +61,7 @@ class IngredientResource(resources.ModelResource):
             'ingredient',
             'amount',
         )
+
 
 @admin.register(Ingredient)
 class IngredientAdmin(ImportExportModelAdmin):

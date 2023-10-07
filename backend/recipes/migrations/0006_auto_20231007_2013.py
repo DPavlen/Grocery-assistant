@@ -12,10 +12,17 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='recipe',
-            options={'ordering': ['-id'], 'verbose_name': 'Рецепт', 'verbose_name_plural': 'Рецепты'},
+            options={
+                'ordering': ['-id'],
+                'verbose_name': 'Рецепт',
+                'verbose_name_plural': 'Рецепты'},
         ),
         migrations.AddConstraint(
             model_name='ingredient',
-            constraint=models.UniqueConstraint(fields=('name', 'measurement_unit'), name='unique_measurement_unit'),
+            constraint=models.UniqueConstraint(
+                fields=(
+                    'name',
+                    'measurement_unit'),
+                name='unique_measurement_unit'),
         ),
     ]

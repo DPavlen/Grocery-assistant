@@ -13,21 +13,40 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='first_name',
-            field=models.CharField(blank=True, max_length=254, verbose_name='Имя пользователя'),
+            field=models.CharField(
+                blank=True,
+                max_length=254,
+                verbose_name='Имя пользователя'),
         ),
         migrations.AlterField(
             model_name='user',
             name='last_name',
-            field=models.CharField(blank=True, max_length=254, verbose_name='Фамилия пользователя'),
+            field=models.CharField(
+                blank=True,
+                max_length=254,
+                verbose_name='Фамилия пользователя'),
         ),
         migrations.AlterField(
             model_name='user',
             name='role',
-            field=models.TextField(choices=[('user', 'User'), ('moderator', 'Moderator'), ('admin', 'Admin')], default='user', max_length=150, verbose_name='Пользовательская роль юзера'),
+            field=models.TextField(
+                choices=[
+                    ('user',
+                     'User'),
+                    ('moderator',
+                     'Moderator'),
+                    ('admin',
+                     'Admin')],
+                default='user',
+                max_length=150,
+                verbose_name='Пользовательская роль юзера'),
         ),
         migrations.AlterField(
             model_name='user',
             name='username',
-            field=models.CharField(max_length=254, unique=True, verbose_name='Логин пользователя'),
+            field=models.CharField(
+                max_length=254,
+                unique=True,
+                verbose_name='Логин пользователя'),
         ),
     ]

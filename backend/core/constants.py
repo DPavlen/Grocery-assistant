@@ -18,7 +18,7 @@ class Lenght(IntEnum):
     # Количество ингедиентов CompositionOfDish.amount
     MIN_AMOUNT_INREDIENT = 1
     MAX_AMOUNT_INREDIENT = 100
-    
+
     # Атрибуты приложения Юзеров
     # Максимальная длина поля email User.email
     MAX_LENGHT_EMAIL = 254

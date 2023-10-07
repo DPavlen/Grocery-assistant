@@ -81,12 +81,12 @@ class UserSubscriptionsSerializer(UserSerializer):
                 'Нельзя подписаться на самого себя!'
             )
         return data
-    
+
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
     """Отложенный импорт для избежания циклической зависимости."""
+
     def to_representation(self, instance):
         """Импорт укороченного рецепта."""
         from api.serializers import ShortRecipeSerializer
         ShortRecipeSerializer(instance, context=self.context)
-

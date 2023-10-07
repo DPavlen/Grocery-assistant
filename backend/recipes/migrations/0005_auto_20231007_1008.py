@@ -14,11 +14,24 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='compositionofdish',
             name='amount',
-            field=models.SmallIntegerField(default=1, validators=[django.core.validators.MinValueValidator(1, message='Минимальное количество ингредиетов в блюде должно быть не меньше 1.'), django.core.validators.MaxValueValidator(100, message='Максимально количество ингредиетов в блюде не превышает 100.')], verbose_name='Количество ингредиентов'),
+            field=models.SmallIntegerField(
+                default=1,
+                validators=[
+                    django.core.validators.MinValueValidator(
+                        1,
+                        message='Минимальное количество ингредиетов в блюде должно быть не меньше 1.'),
+                    django.core.validators.MaxValueValidator(
+                        100,
+                        message='Максимально количество ингредиетов в блюде не превышает 100.')],
+                verbose_name='Количество ингредиентов'),
         ),
         migrations.AlterField(
             model_name='recipe',
             name='image',
-            field=models.ImageField(blank=True, help_text='Добавьте рецепт', upload_to='recipes/images', verbose_name='Изображение рецепта'),
+            field=models.ImageField(
+                blank=True,
+                help_text='Добавьте рецепт',
+                upload_to='recipes/images',
+                verbose_name='Изображение рецепта'),
         ),
     ]

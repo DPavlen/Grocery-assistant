@@ -7,7 +7,7 @@ from drf_extra_fields.fields import Base64ImageField
 
 from core.constants import Lenght
 from recipes.models import (
-    Ingredient, Tag, Recipe, 
+    Ingredient, Tag, Recipe,
     CompositionOfDish, ShoppingCart, Favorite)
 from users.serializers import UserSerializer
 
@@ -23,6 +23,7 @@ class TagSerializer(serializers.ModelSerializer):
             'slug',
         )
         read_only_fields = ('__all__',)
+
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Ингредиентов."""
@@ -98,7 +99,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
                 f'{Lenght.MIN_COOKING_TIME.value} минут.')
         elif recipe.cooking_time > Lenght.MAX_COOKING_TIME.value:
             raise serializers.ValidationError(
-                f'Время приготовления блюда не должно превышать ' 
+                f'Время приготовления блюда не должно превышать '
                 f'{Lenght.MAX_COOKING_TIME.value} минут.')
         return recipe.cooking_time
 
@@ -146,7 +147,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         compositions = []
         for ingredient in ingredients:
             composition = CompositionOfDish(
-                ingredient=Ingredient.objects.get(id=ingredient['id']),    
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
                 amount=ingredient['amount']
             )
@@ -158,12 +159,11 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         Получаем данные о тегах и ингредиентах.
         Создаем рецепт и связываем с тегом."""
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients',[])
+        ingredients = validated_data.pop('ingredients', [])
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         self.create_composition_of_dish(recipe=recipe, ingredients=ingredients)
         return recipe
-
 
     def update(self, instance, validated_data):
         """Обновление рецепта."""
@@ -177,14 +177,13 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    
     def to_representation(self, instance):
         """Преоразование ингредиентов в словарь с данными
         из списка словарей, в Рецепте."""
         request = self.context.get('request')
         context = {'request': request}
         return RecipeReadSerializer(instance, context=context).data
-    
+
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор короткого рецепта.

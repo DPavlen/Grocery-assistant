@@ -33,14 +33,14 @@ class CustomUserViewSet(UserViewSet):
         author_id = self.kwargs.get('id')
         author = get_object_or_404(User, id=author_id)
         serializer = UserSubscriptionsSerializer(
-                author,
-                data=request.data,
-                context={'request': request}
+            author,
+            data=request.data,
+            context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
         Subscriptions.objects.create(user=user, author=author)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
     @subscribe.mapping.delete
     def delete_subscribe(self, request, **kwargs):
         """Отписка от автора рецептов."""
@@ -51,7 +51,7 @@ class CustomUserViewSet(UserViewSet):
         )
         subscription.delete()
         return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
-     
+
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
