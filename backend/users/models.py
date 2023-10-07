@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
@@ -14,6 +15,12 @@ class User(AbstractUser):
         MODERATOR = 'moderator'
         ADMIN = 'admin'
 
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = [
+        'username',
+        'first_name',
+        'last_name',
+    ]
     email = models.EmailField(
         blank=True,
         max_length=Lenght.MAX_LENGHT_EMAIL.value,

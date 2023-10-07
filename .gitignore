@@ -130,3 +130,6 @@ dmypy.json
 
 # .idea
 .idea
+
+backend/recipes/images/
+db copy.sqlite3

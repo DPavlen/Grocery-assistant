@@ -1,13 +1,14 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
-from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
+from api.filters import FilterIngredient, FilterRecipe
 from api.pagination import PaginationCust
-from api.permissions import IsAdminOrReadOnly, IsAdminAuthorOrReadOnly
+from api.permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
 from api.serializers import ( TagSerializer, IngredientSerializer, 
     RecipeReadSerializer,RecipeRecordSerializer, ShortRecipeSerializer)
 from recipes.models import (
@@ -19,25 +20,26 @@ class TagViewSet(ReadOnlyModelViewSet):
     Изменение и создание тэгов разрешено только админам."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-
+    pagination_class = None
 
 class IngredientViewSet(ReadOnlyModelViewSet):
     """Работа с Тегами. Получить список всех тегов.
      Изменение и создание тэгов разрешено только админам."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    pagination_class = PaginationCust
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = FilterIngredient
+    pagination_class = None
 
 
 class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
     queryset = Recipe.objects.all()
-    # permission_classes = (IsAdminAuthorOrReadOnly)
+    permission_classes = (IsAuthorOrAdminOrReadOnly | IsAdminOrReadOnly,)
     pagination_class = PaginationCust
-    # filter_backends
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = FilterRecipe
 
     def perform_create(self, serializer, **kwargs):
         serializer.save(author=self.request.user)
@@ -49,7 +51,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post'],
-        permission_classes=[IsAuthenticated],
+        permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
         """Добавление рецептов в раздел Избранное."""
@@ -63,7 +65,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post'],
-        permission_classes=[IsAuthenticated],
+        permission_classes=[IsAuthenticated]
     )
     def shopping_сart(self, request, pk):
         """Добавление рецептов в раздел Корзина покупок."""

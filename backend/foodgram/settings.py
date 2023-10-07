@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'django_filters',
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
@@ -110,25 +111,22 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ]
 }
 
 DJOSER = {
-    # поле, используемое для авторизации (вместо стандартного 'username')
-    'LOGIN_FIELD': 'email',
-    'HIDE_USERS': False,
-
     'SERIALIZERS': {
-        # UserSerializer
-        'user': 'api.serializers.UserSerializer',
         'user_create': 'api.serializers.UserSerializer',
+        'user': 'api.serializers.UserSerializer',
         'current_user': 'api.serializers.UserSerializer',
-        # указание используемого сериалайзера для токена
         'token': 'djoser.serializers.TokenSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer',
     },
@@ -137,6 +135,7 @@ DJOSER = {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     },
+    'HIDE_USERS': False,
 }
 
 # Internationalization

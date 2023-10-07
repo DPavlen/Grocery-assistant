@@ -19,10 +19,10 @@ class TagSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'slug',
             'color',
+            'slug',
         )
-
+        read_only_fields = ('__all__',)
 
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Ингредиентов."""
@@ -33,6 +33,7 @@ class IngredientSerializer(serializers.ModelSerializer):
             'name',
             'measurement_unit',
         )
+        read_only_fields = ('__all__',)
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -58,6 +59,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'cooking_time',
             'is_favorited',
             'is_in_shopping_cart',
+        )
+        read_only_fields = (
+            'is_favorite',
+            'is_shopping_cart',
         )
 
     def get_ingredients(self, obj):

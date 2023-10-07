@@ -35,3 +35,6 @@ class Lenght(IntEnum):
 
     # page_size = 6 for API PaginationCust.page_size
     PAGE_SIZE = 6
+
+    # Длина логина пользователя
+    LENG_LOGIN_USER = 150

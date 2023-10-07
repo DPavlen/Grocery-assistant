@@ -10,7 +10,6 @@ from users.models import User, Subscriptions
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для создания переопределенного Usera и
     проверки просмотра подписок."""
-    is_subscribed = SerializerMethodField()
     class Meta:
         model = User
         fields = (
@@ -19,7 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
-            'is_subscribed',
             'password',
         )
         extra_kwargs = {'password': {'write_only': True}}
@@ -35,20 +33,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-    
-
-    def get_is_subscribed(self, author): 
-        """Проверка подписки пользователей. 
-        Определяет - подписан ли текущий пользователь 
-        на просматриваемого пользователя(True or False).""" 
-        user = self.context.get('request').user 
-        if user.is_anonymous:     
-            return False 
-        return Subscriptions.objects.filter(user=user, author=author).exists() 
 
 
-
-class UserSubscriptionsSerializer(serializers.ModelSerializer):
+class UserSubscriptionsSerializer(UserSerializer):
     """Сериализатор для подписок пользователя.
     Выводится текущий пользователь."""
     recipes_count = SerializerMethodField()
@@ -62,15 +49,16 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
+            'is_subscribed',
             'recipes',
             'recipes_count',
         )
 
-    def get_recipes(self, author):
+    def get_recipes_count(self, author):
         """Количество рецептов, связанных с текущим автором."""
         return author.recipes.count()
 
-    def get_recipes_count(self, author):
+    def get_recipes(self, author):
         """Получить количество рецептов для данного автора."""
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
