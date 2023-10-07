@@ -3,8 +3,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
+from core.constants import Lenght
 from recipes.validators import SlugValidator
-from recipes.utils import Lenght
 from users.models import User
 
 
@@ -24,6 +24,10 @@ class Ingredient(models.Model):
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         ordering = ['name']
+        constraints = [
+           UniqueConstraint(fields=['name', 'measurement_unit'],
+                            name='unique_measurement_unit')
+       ]
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -105,7 +109,7 @@ class Recipe(models.Model):
                 message=f'Время приготовления блюда должно '
                         f'быть не менее {Lenght.MIN_COOKING_TIME.value} минут.'),
             MaxValueValidator(
-                Lenght.MAX_COOKING_TIME,
+                Lenght.MAX_COOKING_TIME.value,
                 message=f'Время приготовления блюда не превышает '
                         f'более {Lenght.MAX_COOKING_TIME.value} минут.'),
         ]
@@ -114,6 +118,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        ordering = ['-id']
 
     def __str__(self):
         return self.name
@@ -139,13 +144,13 @@ class CompositionOfDish(models.Model):
         default=1,
         validators=[
             MinValueValidator(
-                Lenght.MIN_AMOUNT_INREDIENT,
+                Lenght.MIN_AMOUNT_INREDIENT.value,
                 message=f'Минимальное количество ингредиетов в блюде '
-                        f'должно быть не меньше {Lenght.MIN_AMOUNT_INREDIENT}.'),
+                        f'должно быть не меньше {Lenght.MIN_AMOUNT_INREDIENT.value}.'),
             MaxValueValidator(
-                Lenght.MAX_AMOUNT_INREDIENT,
+                Lenght.MAX_AMOUNT_INREDIENT.value,
                 message=f'Максимально количество ингредиетов в блюде '
-                        f'не превышает {Lenght.MAX_AMOUNT_INREDIENT}.'),
+                        f'не превышает {Lenght.MAX_AMOUNT_INREDIENT.value}.'),
         ]
     )
 

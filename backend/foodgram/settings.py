@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'colorfield',
     'import_export',
+    'core',
 ]
 
 MIDDLEWARE = [

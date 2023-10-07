@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from .lenght import SizeField
+from core.constants import Lenght
 
 
 class User(AbstractUser):
@@ -16,34 +16,34 @@ class User(AbstractUser):
 
     email = models.EmailField(
         blank=True,
-        max_length=SizeField.MAX_LENGHT_EMAIL.value,
+        max_length=Lenght.MAX_LENGHT_EMAIL.value,
         unique=True,
         verbose_name='email address',
     )
     username = models.CharField(
         'Логин пользователя',
-        max_length=SizeField.MAX_LENGHT_USERNAME.value,
+        max_length=Lenght.MAX_LENGHT_USERNAME.value,
         unique=True,
     )
     first_name = models.CharField(
         'Имя пользователя',
-        max_length=SizeField.MAX_LENGHT_FIRST_NAME.value,
+        max_length=Lenght.MAX_LENGHT_FIRST_NAME.value,
         blank=True,
     )
     last_name = models.CharField(
         'Фамилия пользователя',
-        max_length=SizeField.MAX_LENGHT_LAST_NAME.value,
+        max_length=Lenght.MAX_LENGHT_LAST_NAME.value,
         blank=True,
     )
     password = models.CharField(
         'Пароль пользователя',
-        max_length=SizeField.MAX_LENGHT_PASSWORD.value,
+        max_length=Lenght.MAX_LENGHT_PASSWORD.value,
     )
     role = models.TextField(
         'Пользовательская роль юзера',
         choices=RoleChoises.choices,
         default=RoleChoises.USER,
-        max_length=SizeField.MAX_LENGHT_ROLE.value,
+        max_length=Lenght.MAX_LENGHT_ROLE.value,
     )
 
 
