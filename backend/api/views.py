@@ -10,7 +10,8 @@ from api.filters import FilterIngredient, FilterRecipe
 from api.pagination import PaginationCust
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
 from api.serializers import (TagSerializer, IngredientSerializer,
-                             RecipeReadSerializer, RecipeRecordSerializer, ShortRecipeSerializer)
+                             RecipeReadSerializer, RecipeRecordSerializer,
+                             ShortRecipeSerializer)
 from recipes.models import (
     Ingredient, Tag, Recipe, Favorite, ShoppingCart)
 

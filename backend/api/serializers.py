@@ -1,6 +1,5 @@
 from django.db.models import F
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from drf_extra_fields.fields import Base64ImageField
