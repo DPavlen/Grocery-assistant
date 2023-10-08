@@ -11,7 +11,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         )
 
 
-class IsAuthorOrAdminOrReadOnly(permissions.BasePermission):
+class IsAuthorOrAdminOrIsAuthReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         """Разрешено только чтение для всех."""
 

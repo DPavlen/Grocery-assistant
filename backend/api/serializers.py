@@ -1,4 +1,5 @@
 from django.db.models import F
+from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -45,7 +46,18 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
-    cooking_time = SerializerMethodField()
+    cooking_time = serializers.IntegerField(
+        validators=[
+            MinValueValidator(
+                Lenght.MIN_COOKING_TIME.value,
+                message=f'Время приготовления блюда должно быть '
+                        f'не менее {Lenght.MIN_COOKING_TIME.value} минуты.'),
+            MaxValueValidator(
+                Lenght.MAX_COOKING_TIME.value,
+                message=f'Время приготовления блюда не превышает '
+                        f'более {Lenght.MAX_COOKING_TIME.value} минут.'),
+        ]
+    )
 
     class Meta:
         model = Recipe
@@ -89,18 +101,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         if user.is_anonymous:
             return False
         return ShoppingCart.objects.filter(user=user, recipe=recipe).exists()
-
-    def get_cooking_time(self, recipe):
-        """Проверка на время приготовления."""
-        if recipe.cooking_time < Lenght.MIN_COOKING_TIME.value:
-            raise serializers.ValidationError(
-                f'Время приготовления блюда должно быть не менее '
-                f'{Lenght.MIN_COOKING_TIME.value} минут.')
-        elif recipe.cooking_time > Lenght.MAX_COOKING_TIME.value:
-            raise serializers.ValidationError(
-                f'Время приготовления блюда не должно превышать '
-                f'{Lenght.MAX_COOKING_TIME.value} минут.')
-        return recipe.cooking_time
 
 
 class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
@@ -161,7 +161,8 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients', [])
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.create_composition_of_dish(recipe=recipe, ingredients=ingredients)
+        self.create_composition_of_dish(
+            recipe=recipe, ingredients=ingredients)
         return recipe
 
     def update(self, instance, validated_data):
@@ -172,9 +173,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         instance.ingredients.clear()
         self.create_composition_of_dish(
             recipe=instance, ingredients=ingredients)
-        instance = super().update(instance, validated_data)
-        instance.save()
-        return instance
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         """Преоразование ингредиентов в словарь с данными

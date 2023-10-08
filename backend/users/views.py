@@ -29,7 +29,7 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscribe(self, request, **kwargs):
         """Подписка на автора рецептов."""
-        user = request.user
+        # user = request.user
         author_id = self.kwargs.get('id')
         author = get_object_or_404(User, id=author_id)
         serializer = UserSubscriptionsSerializer(
@@ -38,7 +38,7 @@ class CustomUserViewSet(UserViewSet):
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
-        Subscriptions.objects.create(user=user, author=author)
+        Subscriptions.objects.create(user=request.user, author=author)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete

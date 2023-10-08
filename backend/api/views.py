@@ -8,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import FilterIngredient, FilterRecipe
 from api.pagination import PaginationCust
-from api.permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrReadOnly
+from api.permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrIsAuthReadOnly
 from api.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeRecordSerializer,
                              ShortRecipeSerializer)
@@ -38,7 +38,7 @@ class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
     queryset = Recipe.objects.all()
-    permission_classes = (IsAuthorOrAdminOrReadOnly | IsAdminOrReadOnly,)
+    permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly | IsAdminOrReadOnly,)
     pagination_class = PaginationCust
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
