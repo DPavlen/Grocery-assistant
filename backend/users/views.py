@@ -1,9 +1,11 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
+from api.filters import FilterUser
 from api.pagination import PaginationCust
 from rest_framework.response import Response
 from users.serializers import (
@@ -18,7 +20,8 @@ class CustomUserViewSet(UserViewSet):
     по endpoints user и токена."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = FilterUser
     pagination_class = PaginationCust
     # link_model = Subscriptions
 
@@ -66,3 +69,14 @@ class CustomUserViewSet(UserViewSet):
             context={'request': request}
         )
         return self.get_paginated_response(serializer.data)
+
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated],
+    )
+    def me(self, request):
+        """Просмотр подписок на авторов.Мои подписки."""
+        user = request.user
+        serializer = UserSerializer(user, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

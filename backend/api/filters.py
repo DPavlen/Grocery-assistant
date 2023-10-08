@@ -1,6 +1,6 @@
 from django_filters.rest_framework import FilterSet, filters
 
-from recipes.models import Ingredient, Tag, Recipe
+from recipes.models import Ingredient, Tag, Recipe, User
 
 
 class FilterIngredient(FilterSet):
@@ -10,6 +10,17 @@ class FilterIngredient(FilterSet):
     class Meta:
         model = Ingredient
         fields = ('name',)
+
+
+
+class FilterUser(FilterSet):
+    """Фильтр для модели Ингредиент по полю name."""
+    username = filters.CharFilter(lookup_expr='startswith')
+    email = filters.CharFilter(lookup_expr='startswith')
+
+    class Meta:
+        model = User
+        fields = ('username','email',)
 
 
 class FilterRecipe(FilterSet):

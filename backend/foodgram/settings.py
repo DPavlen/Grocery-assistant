@@ -127,12 +127,19 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'SERIALIZERS': {
-        'user_create': 'api.serializers.UserSerializer',
-        'user': 'api.serializers.UserSerializer',
-        'current_user': 'api.serializers.UserSerializer',
+        'user_create': 'users.serializers.UserSerializer',
+        'user': 'users.serializers.UserSerializer',
+        'current_user': 'users.serializers.UserSerializer',
         'token': 'djoser.serializers.TokenSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer',
     },
+    # 'SERIALIZERS': {
+    #     'user_create': 'api.serializers.UserSerializer',
+    #     'user': 'api.serializers.UserSerializer',
+    #     'current_user': 'api.serializers.UserSerializer',
+    #     'token': 'djoser.serializers.TokenSerializer',
+    #     'set_password': 'djoser.serializers.SetPasswordSerializer',
+    # },
 
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],

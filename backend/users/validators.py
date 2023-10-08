@@ -1,22 +1,12 @@
-from django.contrib.auth.validators import UnicodeUsernameValidator
+from re import search
 
-from core.constants import Lenght
+from django.core.exceptions import ValidationError
 
 
-class UsernameValidatorRegex(UnicodeUsernameValidator):
-    """Валидация имени пользователя и его соответсвие.
-    А также ограничение длины пользователя."""
+def validate_username(username):
+    if username == 'me':
+        raise ValidationError('Нельзя использовать имя пользователя me')
 
-    regex = r"^[\w.@+-]+\Z"
-    flag = 0
-    max_length = Lenght.LENG_LOGIN_USER
-    message = (
-        f"Введите правильное имя пользователя."
-        f" Должно содержать буквы, цифры и знаки @/./+/-/_."
-        f" Длина не более {Lenght.LENG_LOGIN_USER} символов"
-    )
-    error_message = {
-        "invalid": f"Набор символов не более {Lenght.LENG_LOGIN_USER}. "
-        "Только буквы, цифры и @/./+/-/_",
-        "required": "Поле не может быть пустым и обязательно!",
-    }
+    if not search(r'^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$', username):
+        raise ValidationError(
+            'В имени пользователя используются недопустимые символы')

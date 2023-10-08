@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import UniqueConstraint
 
 from core.constants import Lenght
+from users.validators import validate_username
 
 
 class User(AbstractUser):
@@ -30,6 +31,7 @@ class User(AbstractUser):
         'Логин пользователя',
         max_length=Lenght.MAX_LENGHT_USERNAME.value,
         unique=True,
+        validators=(validate_username,)
     )
     first_name = models.CharField(
         'Имя пользователя',
