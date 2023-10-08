@@ -8,8 +8,7 @@ from users.models import User, Subscriptions
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для создания переопределенного Usera и
     проверки просмотра подписок."""
-    
-    # is_subscribed = SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
         fields = (
@@ -34,14 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    # def get_is_subscribed(self, obj):
-    #     user = self.context.get('request').user
-    #     if user.is_anonymous:
-    #         return False
-    #     return Subscriptions.objects.filter(user=user, author=obj).exists()
 
-
-# class UserSubscriptionsSerializer(UserSerializer):
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
     """Сериализатор для подписок пользователя.
     Выводится текущий пользователь."""
@@ -64,8 +56,8 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         read_only_fields = ('username', 'email')
 
     def get_is_subscribed(self, obj):
-        """Проверка подписки пользователей. 
-        Определяет - подписан ли текущий пользователь 
+        """Проверка подписки пользователей.
+        Определяет - подписан ли текущий пользователь
         на просматриваемого пользователя."""
         user = self.context.get('request').user
         if user.is_anonymous:

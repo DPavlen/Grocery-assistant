@@ -1,3 +1,5 @@
+autoflake==2.2.1
+autopep8==2.0.4
 requests==2.26.0
 Django==3.2
 djangorestframework==3.14.0
