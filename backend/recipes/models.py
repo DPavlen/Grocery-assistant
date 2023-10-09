@@ -38,12 +38,12 @@ class Tag(models.Model):
     Один тег может быть у многих рецептов."""
     name = models.CharField(
         verbose_name='Название тега для рецепта',
-        max_length=Lenght.MAX_LENGT_NAME,
+        max_length=Lenght.MAX_LENGT_NAME.value,
         unique=True,
     )
     color = ColorField(
         verbose_name='Цвет в формате HEX',
-        max_length=Lenght.MAX_LENGT_NAME_COLOR,
+        max_length=Lenght.MAX_LENGT_NAME_COLOR.value,
         format='hex',
         default='#FF0000',
         unique=True,
@@ -51,7 +51,7 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         verbose_name='Slug названия тега',
-        max_length=Lenght.MAX_LENGT_NAME_SLUG,
+        max_length=Lenght.MAX_LENGT_NAME_SLUG.value,
         unique=True,
         validators=[SlugValidator],
     )

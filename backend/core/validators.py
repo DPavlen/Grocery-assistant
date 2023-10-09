@@ -31,31 +31,23 @@ class ColorValidator(RegexValidator):
     code = 'invalid_color'
 
 
-class UsernameValidator(RegexValidator):
-    def validate(self, username):
-        """Валидация для поля 'Логин пользователя' модели User."""  
-        if not search(r'^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$', username):
-            raise ValidationError(
-                f'В логине пользователя: {username} используются '
-                f'недопустимые символы'
-            )
+def username_validator(username):
+    """Валидация для поля 'Логин пользователя' модели User."""
+    if username == 'me':
+        raise ValidationError('Нельзя использовать имя пользователя me')
 
+    if not search(r'^[a-zA-Z][a-zA-Z0-9-_\.]{1,150}$', username):
+        raise ValidationError(
+            'В логине Пользователя используются недопустимые символы')
 
-class FirstNameValidator(RegexValidator):
-    def validate(self, first_name):
-        """Валидация для поля 'Имя пользователя' модели User."""  
-        if not re.search(r'^[A-Za-zА-Яа-я0-9]{1,150}$', first_name):
-            raise ValidationError(
-                f'В имени: {first_name} используются '
-                f'недопустимые символы'
-            )
+def first_name_validator(first_name):
+    """Валидация для поля 'Имя пользователя' модели User."""  
+    if not search(r'^[A-Za-zА-Яа-я0-9]{1,150}$', first_name):
+        raise ValidationError(
+            'В имени пользователя используются недопустимые символы')
 
-
-class LastNameValidator(RegexValidator):
-    def validate(self, last_name):
-        """Валидация для поля 'Фамилия пользователя' модели User."""  
-        if not re.search(r'^[A-Za-zА-Яа-я0-9]{1,150}$', last_name):
-            raise ValidationError(
-                f'В фамилии: {last_name} используются '
-                f'недопустимые символы'
-            )
+def last_name_validator(last_name):
+    """Валидация для поля 'Фамилия пользователя' модели User."""  
+    if not search(r'^[A-Za-zА-Яа-я0-9]{1,150}$', last_name):
+        raise ValidationError(
+            'В фамилии пользователя используются недопустимые символы')

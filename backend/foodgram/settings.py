@@ -25,11 +25,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users.apps.UsersConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
-    'users.apps.UsersConfig',
+    # 'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
     'colorfield',
@@ -127,19 +128,12 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'SERIALIZERS': {
-        'user_create': 'users.serializers.UserSerializer',
-        'user': 'users.serializers.UserSerializer',
-        'current_user': 'users.serializers.UserSerializer',
-        'token': 'djoser.serializers.TokenSerializer',
+        'user_create': 'users.serializers.MyUserCreateSerializer',
+        'user': 'users.serializers.MyUserSerializer',
+        'current_user': 'users.serializers.MyUserSerializer',
+        # 'token': 'djoser.serializers.TokenSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer',
     },
-    # 'SERIALIZERS': {
-    #     'user_create': 'api.serializers.UserSerializer',
-    #     'user': 'api.serializers.UserSerializer',
-    #     'current_user': 'api.serializers.UserSerializer',
-    #     'token': 'djoser.serializers.TokenSerializer',
-    #     'set_password': 'djoser.serializers.SetPasswordSerializer',
-    # },
 
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],

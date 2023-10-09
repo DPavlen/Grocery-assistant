@@ -5,8 +5,8 @@ from django.db.models import UniqueConstraint
 
 from core.constants import Lenght
 # from core.validators import validate_username
-from core.validators import (UsernameValidator, FirstNameValidator,
-                            LastNameValidator)
+from core.validators import ( 
+    username_validator, first_name_validator,last_name_validator)
 
 
 
@@ -35,17 +35,17 @@ class User(AbstractUser):
         'Логин пользователя',
         max_length=Lenght.MAX_LENGHT_USERNAME.value,
         unique=True,
-        validators=[UsernameValidator()]
+        validators=[username_validator]
     )
     first_name = models.CharField(
         'Имя пользователя',
         max_length=Lenght.MAX_LENGHT_FIRST_NAME.value,
-        validators=[FirstNameValidator()]
+        validators=[first_name_validator]
     )
     last_name = models.CharField(
         'Фамилия пользователя',
         max_length=Lenght.MAX_LENGHT_LAST_NAME.value,
-        validators=[LastNameValidator()]
+        validators=[last_name_validator]
     )
     password = models.CharField(
         'Пароль пользователя',

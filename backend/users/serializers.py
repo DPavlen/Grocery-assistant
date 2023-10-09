@@ -1,3 +1,4 @@
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
@@ -5,42 +6,9 @@ from rest_framework.fields import SerializerMethodField
 from users.models import User, Subscriptions
 
 
-class UserSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания переопределенного Usera и
+class MyUserSerializer(UserSerializer):
+    """Сериализатор для просмотра переопределенного Usera и
     проверки просмотра подписок."""
-
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'password',
-        )
-        extra_kwargs = {
-            'email': {'required': True},
-            'username': {'required': True},
-            'first_name': {'required': True},
-            'last_name': {'required': True},
-            'password': {'write_only': True}
-            }
-
-    def create(self, validated_data):
-        """Создание нового пользователя с указанными полями."""        
-        user = User( 
-            username=validated_data['username'], 
-            email=validated_data['email'], 
-            first_name=validated_data['first_name'], 
-            last_name=validated_data['last_name'], 
-        ) 
-        user.set_password(validated_data['password']) 
-        user.save() 
-        return user
-
-class UserMeSerializer(UserSerializer):
-    """."""
     is_subscribed = SerializerMethodField(read_only=True)
     class Meta:
         model = User
@@ -50,9 +18,10 @@ class UserMeSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
+            'password',
             'is_subscribed',
         )
-        read_only_fields = ('email', 'username', 'first_name', 'last_name')
+        extra_kwargs = {'password': {'write_only': True}}
 
     def get_is_subscribed(self, obj):
         """Проверка подписки пользователей.
@@ -64,10 +33,26 @@ class UserMeSerializer(UserSerializer):
         return Subscriptions.objects.filter(user=user, author=obj).exists()
 
 
+class MyUserCreateSerializer(UserCreateSerializer):
+    """Сериализатор для создания переопределенного Usera."""
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
+        )
+        # extra_kwargs = {'password': {'write_only': True}}
+
+
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
     """Сериализатор для подписок пользователя.
     Выводится текущий пользователь."""
     is_subscribed = SerializerMethodField(read_only=True)
+    # recipes = ShortRecipeSerializer(many=True, read_only=True)
     recipes_count = SerializerMethodField()
     recipes = SerializerMethodField()
 
@@ -83,7 +68,7 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
             'recipes',
             'recipes_count',
         )
-        read_only_fields = ('username', 'email')
+        read_only_fields = ('email', 'username', 'first_name', 'last_name')
 
     def get_is_subscribed(self, obj):
         """Проверка подписки пользователей.

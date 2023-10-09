@@ -10,7 +10,9 @@ from api.filters import FilterUser
 from api.pagination import PaginationCust
 from rest_framework.response import Response
 from users.serializers import (
-    UserSerializer, UserSubscriptionsSerializer, UserMeSerializer)
+    MyUserSerializer, MyUserCreateSerializer,
+    UserSubscriptionsSerializer)
+    # UserMeSerializer,)
 from users.models import User, Subscriptions
 
 
@@ -20,7 +22,7 @@ class CustomUserViewSet(UserViewSet):
     возможность подписки. Djoser позволяет переходить
     по endpoints user и токена."""
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = MyUserSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterUser
     pagination_class = PaginationCust
@@ -70,14 +72,14 @@ class CustomUserViewSet(UserViewSet):
         )
         return self.get_paginated_response(serializer.data)
 
-    @action(
-        detail=False,
-        methods=['get'],
-        permission_classes=[IsAuthenticated],
-    )
-    def me(self, request):
-        """Просмотр подписок на авторов.Мои подписки."""
-        user = request.user
-        serializer = UserMeSerializer(user, context={'request': request})
-        # serializer = UserSerializer(user, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # @action(
+    #     detail=False,
+    #     methods=['get'],
+    #     permission_classes=[IsAuthenticated],
+    # )
+    # def me(self, request):
+    #     """Просмотр подписок на авторов.Мои подписки."""
+    #     user = request.user
+    #     serializer = MyUserSerializer(user, context={'request': request})
+    #     # serializer = UserSerializer(user, context={'request': request})
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
