@@ -1,5 +1,6 @@
 from django.db.models import F
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.forms import ValidationError
 from rest_framework import serializers
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -159,6 +160,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         Создаем рецепт и связываем с тегом."""
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients', [])
+        # Проверка что мы будем создавать рецепт с ингредиентом
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         self.create_composition_of_dish(
@@ -181,6 +183,20 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         context = {'request': request}
         return RecipeReadSerializer(instance, context=context).data
+    
+    def validate_image(self, image):
+        if not image:
+            raise ValidationError(
+                {'image': 'Нужно изображение!'})
+        return image
+    
+
+    def validate_ingredients(self, ingredients):
+        if not ingredients:
+            raise ValidationError(
+                {'ingredients': 'Необходим миниму 1 ингердиент!'})
+        return ingredients
+
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):

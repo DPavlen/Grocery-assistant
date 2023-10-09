@@ -1,9 +1,14 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
 from core.constants import Lenght
-from users.validators import validate_username
+# from core.validators import validate_username
+from core.validators import (UsernameValidator, FirstNameValidator,
+                            LastNameValidator)
+
+
 
 
 class User(AbstractUser):
@@ -22,7 +27,6 @@ class User(AbstractUser):
         'last_name',
     ]
     email = models.EmailField(
-        blank=True,
         max_length=Lenght.MAX_LENGHT_EMAIL.value,
         unique=True,
         verbose_name='email address',
@@ -31,17 +35,17 @@ class User(AbstractUser):
         'Логин пользователя',
         max_length=Lenght.MAX_LENGHT_USERNAME.value,
         unique=True,
-        validators=(validate_username,)
+        validators=[UsernameValidator()]
     )
     first_name = models.CharField(
         'Имя пользователя',
         max_length=Lenght.MAX_LENGHT_FIRST_NAME.value,
-        blank=True,
+        validators=[FirstNameValidator()]
     )
     last_name = models.CharField(
         'Фамилия пользователя',
         max_length=Lenght.MAX_LENGHT_LAST_NAME.value,
-        blank=True,
+        validators=[LastNameValidator()]
     )
     password = models.CharField(
         'Пароль пользователя',

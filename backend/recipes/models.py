@@ -1,10 +1,10 @@
 from colorfield.fields import ColorField
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
 from core.constants import Lenght
-from recipes.validators import SlugValidator
+from core.validators import SlugValidator, ColorValidator
 from users.models import User
 
 
@@ -43,9 +43,11 @@ class Tag(models.Model):
     )
     color = ColorField(
         verbose_name='Цвет в формате HEX',
+        max_length=Lenght.MAX_LENGT_NAME_COLOR,
         format='hex',
         default='#FF0000',
         unique=True,
+        validators=[ColorValidator],
     )
     slug = models.SlugField(
         verbose_name='Slug названия тега',

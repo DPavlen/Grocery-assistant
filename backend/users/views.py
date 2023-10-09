@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
+from djoser.serializers import SetPasswordSerializer
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -9,7 +10,7 @@ from api.filters import FilterUser
 from api.pagination import PaginationCust
 from rest_framework.response import Response
 from users.serializers import (
-    UserSerializer, UserSubscriptionsSerializer)
+    UserSerializer, UserSubscriptionsSerializer, UserMeSerializer)
 from users.models import User, Subscriptions
 
 
@@ -32,7 +33,6 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscribe(self, request, **kwargs):
         """Подписка на автора рецептов."""
-        # user = request.user
         author_id = self.kwargs.get('id')
         author = get_object_or_404(User, id=author_id)
         serializer = UserSubscriptionsSerializer(
@@ -78,5 +78,6 @@ class CustomUserViewSet(UserViewSet):
     def me(self, request):
         """Просмотр подписок на авторов.Мои подписки."""
         user = request.user
-        serializer = UserSerializer(user, context={'request': request})
+        serializer = UserMeSerializer(user, context={'request': request})
+        # serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

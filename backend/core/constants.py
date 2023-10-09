@@ -15,6 +15,8 @@ class Lenght(IntEnum):
     MAX_LENGT_MEASUREMENT_UNIT = 50
     # Максимальная длина слага тега Tag.slug
     MAX_LENGT_NAME_SLUG = 150
+    # Максимальная длина color тега Tag.color
+    MAX_LENGT_NAME_COLOR = 7
     # Количество ингедиентов CompositionOfDish.amount
     MIN_AMOUNT_INREDIENT = 1
     MAX_AMOUNT_INREDIENT = 100
@@ -36,5 +38,10 @@ class Lenght(IntEnum):
     # page_size = 6 for API PaginationCust.page_size
     PAGE_SIZE = 6
 
-    # Длина логина пользователя
-    LENG_LOGIN_USER = 150
+    #Минимальная длина логина пользователя
+    MIN_LENGHT_LOGIN_USER = 1
+    #Минимальная длина поля first_name 
+    MIN_LENGHT_FIRST_NAME = 1
+
+    #Минимальная длина поля last_name
+    MIN_LENGHT_LAST_NAME = 1

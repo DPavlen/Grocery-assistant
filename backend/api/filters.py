@@ -14,7 +14,7 @@ class FilterIngredient(FilterSet):
 
 
 class FilterUser(FilterSet):
-    """Фильтр для модели Ингредиент по полю name."""
+    """Фильтр для модели Юзеров по полям username, email."""
     username = filters.CharFilter(lookup_expr='startswith')
     email = filters.CharFilter(lookup_expr='startswith')
 

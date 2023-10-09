@@ -33,7 +33,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'cooking_time'
     )
     search_fields = ('author',)
-    list_filter = ('id', 'author', 'name')
+    list_filter = ('author', 'name', 'tags',)
 
 
 @admin.register(CompositionOfDish)
@@ -47,10 +47,10 @@ class CompositionOfDishAdmin(admin.ModelAdmin):
         'amount',
     )
     search_fields = ('ingredient',)
-    list_filter = ('id', 'recipe', 'ingredient', 'amount')
+    list_filter = ('recipe', 'ingredient', 'amount')
 
 
-class IngredientResource(resources.ModelResource):
+class IngredientAdmin(resources.ModelResource):
     """Настроенная админ-панель ингредиентов.
     Возможность сделать import и export файлов csv,json."""
 
@@ -65,7 +65,8 @@ class IngredientResource(resources.ModelResource):
 
 @admin.register(Ingredient)
 class IngredientAdmin(ImportExportModelAdmin):
-    resource_classes = [IngredientResource]
+    resource_classes = [IngredientAdmin]
+    list_filter = ('name',)
 
 
 @admin.register(Favorite)
