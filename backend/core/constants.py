@@ -38,10 +38,10 @@ class Lenght(IntEnum):
     # page_size = 6 for API PaginationCust.page_size
     PAGE_SIZE = 6
 
-    #Минимальная длина логина пользователя
+    # Минимальная длина логина пользователя
     MIN_LENGHT_LOGIN_USER = 1
-    #Минимальная длина поля first_name 
+    # Минимальная длина поля first_name
     MIN_LENGHT_FIRST_NAME = 1
 
-    #Минимальная длина поля last_name
+    # Минимальная длина поля last_name
     MIN_LENGHT_LAST_NAME = 1

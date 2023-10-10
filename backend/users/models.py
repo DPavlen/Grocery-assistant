@@ -1,14 +1,11 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
 from core.constants import Lenght
 # from core.validators import validate_username
-from core.validators import ( 
-    username_validator, first_name_validator,last_name_validator)
-
-
+from core.validators import (
+    username_validator, first_name_validator, last_name_validator)
 
 
 class User(AbstractUser):

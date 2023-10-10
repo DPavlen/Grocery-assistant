@@ -12,7 +12,6 @@ class FilterIngredient(FilterSet):
         fields = ('name',)
 
 
-
 class FilterUser(FilterSet):
     """Фильтр для модели Юзеров по полям username, email."""
     username = filters.CharFilter(lookup_expr='startswith')
@@ -20,7 +19,7 @@ class FilterUser(FilterSet):
 
     class Meta:
         model = User
-        fields = ('username','email',)
+        fields = ('username', 'email',)
 
 
 class FilterRecipe(FilterSet):

@@ -10,6 +10,7 @@ class MyUserSerializer(UserSerializer):
     """Сериализатор для просмотра переопределенного Usera и
     проверки просмотра подписок."""
     is_subscribed = SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
         fields = (

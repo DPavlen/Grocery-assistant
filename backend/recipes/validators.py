@@ -25,4 +25,3 @@
 #         f'Длина не более {Lenght.MAX_LENGT_NAME_COLOR.value} символов'
 #     )
 #     code = 'invalid_slug'
-

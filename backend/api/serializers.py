@@ -183,20 +183,18 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         context = {'request': request}
         return RecipeReadSerializer(instance, context=context).data
-    
+
     def validate_image(self, image):
         if not image:
             raise ValidationError(
                 {'image': 'Нужно изображение!'})
         return image
-    
 
     def validate_ingredients(self, ingredients):
         if not ingredients:
             raise ValidationError(
                 {'ingredients': 'Необходим миниму 1 ингердиент!'})
         return ingredients
-
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
