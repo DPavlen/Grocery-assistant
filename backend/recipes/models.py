@@ -129,6 +129,7 @@ class Recipe(models.Model):
 class CompositionOfDish(models.Model):
     """Состав блюда | Ингредиенты в рецепте.
     Определение количества ингредиентов в рецепте.
+    Ограничение: В рецепте уникальный ингредиент.
     """
     recipe = models.ForeignKey(
         Recipe,
@@ -160,6 +161,13 @@ class CompositionOfDish(models.Model):
     class Meta:
         verbose_name = 'Состав блюда | Ингредиент в рецепте'
         verbose_name_plural = 'Состав блюда | Ингредиенты в рецепте'
+        constraints = [
+            UniqueConstraint(
+                fields=('recipe', 'ingredient'),
+                name='unique_ingredient_in_recipe',
+            )
+        ]
+
 
     def __str__(self):
         return f'{self.ingredient} – {self.amount}'

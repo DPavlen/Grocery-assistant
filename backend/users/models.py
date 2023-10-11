@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
-from django.db import models
-from django.db.models import UniqueConstraint
+from django.db import models, IntegrityError
+from django.db.models import F, Q
+from django.db.models import CheckConstraint, UniqueConstraint
 
 from core.constants import LenghtField
 # from core.validators import validate_username
@@ -68,7 +69,10 @@ class Subscriptions(models.Model):
     """Подписки пользователей на друг друга.
     author(int): Автор рецепта. Связь через ForeignKey.
     user(int): Подписчик. Cвязь через ForeignKey.
-    date_sub(datetime): Дата подписки."""
+    date_sub(datetime): Дата подписки. 
+    Ограничение, что уникальности логинов атора и юзера.
+    Ограничение, что подписчик и автор не могут быть одинаковые. 
+    """
 
     author = models.ForeignKey(
         User,
@@ -93,8 +97,13 @@ class Subscriptions(models.Model):
         verbose_name_plural = 'Подписки'
         ordering = ('-id',)
         constraints = [
+            CheckConstraint(
+                check=~Q(user=F('author')),
+                name='not subscribe to yourself! '
+            ),
             UniqueConstraint(fields=['user', 'author'],
-                             name='unique_subscription')
+                             name='unique_subscription'),
+            
         ]
 
     def __str__(self):

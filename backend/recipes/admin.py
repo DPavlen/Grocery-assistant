@@ -20,12 +20,28 @@ class TagAdmin(admin.ModelAdmin):
     list_filter = ('id', 'name', 'color')
 
 
+# class CompositionOfDish(admin.TabularInline):
+#     """Отображение состава блюда в виде таблицы. 
+#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
+#     model = Recipe.ingredients.through
+#     min_num = 1
+
+
+# class TagRecipeInline(admin.TabularInline):
+#     """Отображение тегов в виде таблицы. 
+#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
+#     model = Recipe.tags.through
+#     min_num = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Тегов."""
-
+    # inlines = [
+    #     CompositionOfDish,
+    #     TagRecipeInline,
+    # ]
     list_display = (
-        'id',
         'author',
         'name',
         'image',
@@ -91,3 +107,17 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     )
     list_filter = ('recipe', 'user')
     search_fields = ('user',)
+
+
+# class CompositionOfDish(admin.TabularInline):
+#     """Отображение состава блюда в виде таблицы. 
+#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
+#     model = Recipe.ingredients.through
+#     min_num = 1
+
+
+# class TagRecipeInline(admin.TabularInline):
+#     """Отображение тегов в виде таблицы. 
+#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
+#     model = Recipe.tags.through
+#     min_num = 1

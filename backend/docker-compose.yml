@@ -33,7 +33,8 @@ services:
       - media:/app/media
 
     ports:
-      - 9000:80
+      - 8000:80
+      # - 9000:80
 
 
-## Volume for Compose
+## Volume for Compos

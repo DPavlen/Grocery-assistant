@@ -7,7 +7,7 @@ class LenghtField(IntEnum):
     # Атрибуты приложения Рецепты
     # Время приготовления Recipe.cooking_time
     MIN_COOKING_TIME = 1
-    MAX_COOKING_TIME = 600
+    MAX_COOKING_TIME = 1000
     # Максимальная длина поля name(max_length) Ingredient.name
     # Tag.name, Recipe.name
     MAX_LENGT_NAME = 200
