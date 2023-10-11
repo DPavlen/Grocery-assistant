@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 
-class Lenght(IntEnum):
+class LenghtField(IntEnum):
     """Длины полей в приложении Рецептов и Юзеров."""
 
     # Атрибуты приложения Рецепты

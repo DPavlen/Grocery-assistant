@@ -6,7 +6,7 @@ from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from drf_extra_fields.fields import Base64ImageField
 
-from core.constants import Lenght
+from core.constants import LenghtField
 from recipes.models import (
     Ingredient, Tag, Recipe,
     CompositionOfDish, ShoppingCart, Favorite)
@@ -50,13 +50,13 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     cooking_time = serializers.IntegerField(
         validators=[
             MinValueValidator(
-                Lenght.MIN_COOKING_TIME.value,
+                LenghtField.MIN_COOKING_TIME.value,
                 message=f'Время приготовления блюда должно быть '
-                        f'не менее {Lenght.MIN_COOKING_TIME.value} минуты.'),
+                        f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
             MaxValueValidator(
-                Lenght.MAX_COOKING_TIME.value,
+                LenghtField.MAX_COOKING_TIME.value,
                 message=f'Время приготовления блюда не превышает '
-                        f'более {Lenght.MAX_COOKING_TIME.value} минут.'),
+                        f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
         ]
     )
 
