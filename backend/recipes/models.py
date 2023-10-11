@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from core.constants import Lenght
+from core.constants import LenghtField
 from core.validators import SlugValidator, ColorValidator
 from users.models import User
 
@@ -13,11 +13,11 @@ class Ingredient(models.Model):
     Один ингредиент может быть у многих рецептов."""
     name = models.CharField(
         verbose_name='Название ингредиента для рецепта',
-        max_length=Lenght.MAX_LENGT_NAME.value,
+        max_length=LenghtField.MAX_LENGT_NAME.value,
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
-        max_length=Lenght.MAX_LENGT_MEASUREMENT_UNIT.value,
+        max_length=LenghtField.MAX_LENGT_MEASUREMENT_UNIT.value,
     )
 
     class Meta:
@@ -38,12 +38,12 @@ class Tag(models.Model):
     Один тег может быть у многих рецептов."""
     name = models.CharField(
         verbose_name='Название тега для рецепта',
-        max_length=Lenght.MAX_LENGT_NAME.value,
+        max_length=LenghtField.MAX_LENGT_NAME.value,
         unique=True,
     )
     color = ColorField(
         verbose_name='Цвет в формате HEX',
-        max_length=Lenght.MAX_LENGT_NAME_COLOR.value,
+        max_length=LenghtField.MAX_LENGT_NAME_COLOR.value,
         format='hex',
         default='#FF0000',
         unique=True,
@@ -51,7 +51,7 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         verbose_name='Slug названия тега',
-        max_length=Lenght.MAX_LENGT_NAME_SLUG.value,
+        max_length=LenghtField.MAX_LENGT_NAME_SLUG.value,
         unique=True,
         validators=[SlugValidator],
     )
@@ -89,7 +89,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         verbose_name='Название рецепта',
-        max_length=Lenght.MAX_LENGT_NAME.value,
+        max_length=LenghtField.MAX_LENGT_NAME.value,
         db_index=True,
     )
     image = models.ImageField(
@@ -107,13 +107,13 @@ class Recipe(models.Model):
         help_text='Ввведите время приготовления блюда',
         validators=[
             MinValueValidator(
-                Lenght.MIN_COOKING_TIME.value,
+                LenghtField.MIN_COOKING_TIME.value,
                 message=f'Время приготовления блюда должно быть '
-                        f'не менее {Lenght.MIN_COOKING_TIME.value} минут.'),
+                        f'не менее {LenghtField.MIN_COOKING_TIME.value} минут.'),
             MaxValueValidator(
-                Lenght.MAX_COOKING_TIME.value,
+                LenghtField.MAX_COOKING_TIME.value,
                 message=f'Время приготовления блюда не превышает '
-                        f'более {Lenght.MAX_COOKING_TIME.value} минут.'),
+                        f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
         ]
     )
 
@@ -146,14 +146,14 @@ class CompositionOfDish(models.Model):
         default=1,
         validators=[
             MinValueValidator(
-                Lenght.MIN_AMOUNT_INREDIENT.value,
+                LenghtField.MIN_AMOUNT_INREDIENT.value,
                 message=f'Минимальное количество ингредиетов в блюде '
                         f'должно быть не меньше '
-                        f'{Lenght.MIN_AMOUNT_INREDIENT.value}.'),
+                        f'{LenghtField.MIN_AMOUNT_INREDIENT.value}.'),
             MaxValueValidator(
-                Lenght.MAX_AMOUNT_INREDIENT.value,
+                LenghtField.MAX_AMOUNT_INREDIENT.value,
                 message=f'Максимально количество ингредиетов в блюде '
-                        f'не превышает {Lenght.MAX_AMOUNT_INREDIENT.value}.'),
+                        f'не превышает {LenghtField.MAX_AMOUNT_INREDIENT.value}.'),
         ]
     )
 

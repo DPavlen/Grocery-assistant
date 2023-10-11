@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from core.constants import Lenght
+from core.constants import LenghtField
 # from core.validators import validate_username
 from core.validators import (
     username_validator, first_name_validator, last_name_validator)
@@ -24,35 +24,35 @@ class User(AbstractUser):
         'last_name',
     ]
     email = models.EmailField(
-        max_length=Lenght.MAX_LENGHT_EMAIL.value,
+        max_length=LenghtField.MAX_LENGHT_EMAIL.value,
         unique=True,
         verbose_name='email address',
     )
     username = models.CharField(
         'Логин пользователя',
-        max_length=Lenght.MAX_LENGHT_USERNAME.value,
+        max_length=LenghtField.MAX_LENGHT_USERNAME.value,
         unique=True,
         validators=[username_validator]
     )
     first_name = models.CharField(
         'Имя пользователя',
-        max_length=Lenght.MAX_LENGHT_FIRST_NAME.value,
+        max_length=LenghtField.MAX_LENGHT_FIRST_NAME.value,
         validators=[first_name_validator]
     )
     last_name = models.CharField(
         'Фамилия пользователя',
-        max_length=Lenght.MAX_LENGHT_LAST_NAME.value,
+        max_length=LenghtField.MAX_LENGHT_LAST_NAME.value,
         validators=[last_name_validator]
     )
     password = models.CharField(
         'Пароль пользователя',
-        max_length=Lenght.MAX_LENGHT_PASSWORD.value,
+        max_length=LenghtField.MAX_LENGHT_PASSWORD.value,
     )
     role = models.TextField(
         'Пользовательская роль юзера',
         choices=RoleChoises.choices,
         default=RoleChoises.USER,
-        max_length=Lenght.MAX_LENGHT_ROLE.value,
+        max_length=LenghtField.MAX_LENGHT_ROLE.value,
     )
 
     class Meta:
