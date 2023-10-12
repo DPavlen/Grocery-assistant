@@ -2,23 +2,26 @@
 
 version: '3'
 
-volumes:
-  pg_data:
-  static:
-  media:
+# volumes:
+#   sqlite_data:
+
 
 services:
-  db:
-    image: postgres:13
-    env_file: .env
-    volumes:
-      - pg_data:/var/lib/postgresql/data
+  # db:
+  #   image: postgres:13
+  #   env_file: .env
+  #   volumes:
+      # - pg_data:/var/lib/postgresql/data
   backend:
     build: ./backend/
     env_file: .env
     volumes:
       - static:/backend_static
       - media:/app/media
+      - sqlite_data:/data
+  volumes:
+    sqlite_data:
+
   frontend:
     build: ./frontend/
     env_file: .env
@@ -33,7 +36,7 @@ services:
       - media:/app/media
 
     ports:
-      - 8000:80
+      - '8000:80'
       # - 9000:80
 
 

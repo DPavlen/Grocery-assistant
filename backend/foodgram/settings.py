@@ -11,10 +11,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY',
                        'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+# DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS','localhost,127.0.0.1').split(',')
-
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS','localhost,127.0.0.1').split(',')
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
+# ALLOWED_HOSTS = [
+#     'localhost',
+#     '127.0.0.1',
+#     '[::1]',
+#     'testserver',
+# ]
 
 # Application definition
 
@@ -72,12 +80,19 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': '/data/db.sqlite3',
     }
-}
+} 
+
 
 # DATABASES = {
 #     'default': {
@@ -131,6 +146,7 @@ DJOSER = {
         'user_create': 'users.serializers.MyUserCreateSerializer',
         'user': 'users.serializers.MyUserSerializer',
         'current_user': 'users.serializers.MyUserSerializer',
+        'token': 'djoser.serializers.TokenSerializer',
         'set_password': 'djoser.serializers.SetPasswordSerializer',
     },
 
