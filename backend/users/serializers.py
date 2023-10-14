@@ -2,8 +2,25 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
+from drf_extra_fields.fields import Base64ImageField
 
+from recipes.models import Recipe
 from users.models import User, Subscriptions
+
+
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор короткого рецепта.
+    image позволяет передавать изображения в виде base64-строки по API."""
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time',
+        )
 
 
 class MyUserSerializer(UserSerializer):
@@ -109,10 +126,10 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         return data
 
 
-class ShortRecipeSerializer(serializers.ModelSerializer):
-    """Отложенный импорт для избежания циклической зависимости."""
+# class ShortRecipeSerializer(serializers.ModelSerializer):
+#     """Отложенный импорт для избежания циклической зависимости."""
 
-    def to_representation(self, instance):
-        """Импорт укороченного рецепта."""
-        from api.serializers import ShortRecipeSerializer
-        ShortRecipeSerializer(instance, context=self.context)
+#     def to_representation(self, instance):
+#         """Импорт укороченного рецепта."""
+#         from api.serializers import ShortRecipeSerializer
+#         ShortRecipeSerializer(instance, context=self.context)
