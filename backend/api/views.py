@@ -7,9 +7,11 @@ from reportlab.pdfgen import canvas
 from tkinter import Canvas
 from django.db.models import Sum
 #
+from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import (
+    IsAuthenticated, SAFE_METHODS, IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
@@ -47,7 +49,8 @@ class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
     queryset = Recipe.objects.all()
-    permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly | IsAdminOrReadOnly,)
+    # permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly | IsAdminOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = PaginationCust
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
@@ -86,9 +89,12 @@ class RecipeViewSet(ModelViewSet):
         
     #     kwargs['partial'] = False
     #     return self.update(request, *args, **kwargs)
+
+
     @action(
         detail=True,
         methods=['post'],
+        serializer_class=FavoritesListSerializer,
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
@@ -106,12 +112,15 @@ class RecipeViewSet(ModelViewSet):
         serializer_class=ShoppingCartSerializer,
         permission_classes=[IsAuthenticated]
     )
-    def shopping_сart(self, request, pk):
+    def shopping_сart(self, request,  pk):
         """Добавление рецептов в раздел Корзина покупок."""
         return self.add_recipe(ShoppingCart, request.user, pk)
 
     @shopping_сart.mapping.delete
     def delete_shopping_сart(self, request, pk):
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED,
+                        data={'detail': 'User is not authenticated.'})
         """Удаление рецептов в раздел Корзина покупок."""
         return self.delete_recipe(ShoppingCart, request.user, pk)
 
@@ -127,9 +136,13 @@ class RecipeViewSet(ModelViewSet):
 
     def delete_recipe(self, models, user, pk):
         """Метод удаления рецепта."""
-        obj = get_object_or_404(models, user=user, recipe__id=pk)
-        obj.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            obj = get_object_or_404(models, user=user, recipe__id=pk)
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except models.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST, 
+                            data={'detail': 'Not found.'})
 
     @action(
         detail=False,
