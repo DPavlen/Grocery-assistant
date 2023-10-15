@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from api.filters import FilterUser
 from api.pagination import PaginationCust
 from rest_framework.response import Response
+from api.permissions import IsAdminOrReadOnly
 from users.serializers import (
     MyUserSerializer, UserSubscriptionsSerializer)
 # UserMeSerializer,)
@@ -23,6 +24,7 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = MyUserSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterUser
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PaginationCust
     # link_model = Subscriptions
 

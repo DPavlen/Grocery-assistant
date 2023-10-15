@@ -1,3 +1,4 @@
+import io
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
@@ -19,8 +20,9 @@ from api.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeRecordSerializer,
                              ShortRecipeSerializer, ShoppingCartSerializer,
                              FavoritesListSerializer)
+from core.utils import create_shopping_list_report
 from recipes.models import (
-    Ingredient, Tag, Recipe, Favorite, ShoppingCart)
+    Ingredient, Tag, Recipe, Favorite, ShoppingCart, CompositionOfDish)
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -130,20 +132,19 @@ class RecipeViewSet(ModelViewSet):
         """
         Получение списка покупок у текущего
         пользователя из базы данных.
+        Использует этот буфер для создания HTTP-ответа с прикрепленным PDF-файлом.
         """
+        user = self.request.user
+        if not user.ShoppingCart.exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         shopping_cart = ShoppingCart.objects.filter(user=request.user)
-
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="shopping_cart.pdf"'
-        pdf_filename = 'shopping_cart.pdf' 
-        pdf = canvas.Canvas(pdf_filename)
-
-        y = 800 
-        for item in shopping_cart:
-            data = f'ID: {item.id}, User: {item.user}, Recipe: {item.recipe}'
-            pdf.drawString(100, y, data)
-            y -= 20
-            pdf.showPage() 
-
-        pdf.save() 
+        buy_list_text = create_shopping_list_report(shopping_cart)
+        # Создание HttpResponse с содержимым буфера
+        response = HttpResponse(
+            buy_list_text,
+            content_type='application/pdf'
+        )
+        pdf_filename = 'shopping_cart.pdf'
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
         return response
+ 
