@@ -1,5 +1,11 @@
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
+#
+from reportlab.pdfgen import canvas
+from tkinter import Canvas
+from django.db.models import Sum
+#
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
@@ -11,7 +17,8 @@ from api.pagination import PaginationCust
 from api.permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrIsAuthReadOnly
 from api.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeRecordSerializer,
-                             ShortRecipeSerializer)
+                             ShortRecipeSerializer, ShoppingCartSerializer,
+                             FavoritesListSerializer)
 from recipes.models import (
     Ingredient, Tag, Recipe, Favorite, ShoppingCart)
 
@@ -43,12 +50,31 @@ class RecipeViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
 
-    def perform_create(self, serializer, **kwargs):
+    # def perform_create(self, serializer, **kwargs):
+    #     serializer.save(author=self.request.user)
+    def get_serializer_class(self):
+        # return (RecipeReadSerializer if self.request.method in SAFE_METHODS
+                # else RecipeRecordSerializer)
+    
+        if self.action in SAFE_METHODS:
+            return RecipeReadSerializer
+        elif self.action == 'favorite':
+            return FavoritesListSerializer
+        elif self.action == 'shopping_cart':
+            return ShoppingCartSerializer
+        return RecipeRecordSerializer
+    
+
+    def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def get_serializer_class(self):
-        return (RecipeReadSerializer if self.request.method in SAFE_METHODS
-                else RecipeRecordSerializer)
+    
+    # def get_serializer_class(self):
+    #     return (RecipeReadSerializer if self.request.method in SAFE_METHODS
+    #             else RecipeRecordSerializer)
+    
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
 
     @action(
         detail=True,
@@ -67,6 +93,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post'],
+        serializer_class=ShoppingCartSerializer,
         permission_classes=[IsAuthenticated]
     )
     def shopping_сart(self, request, pk):
@@ -93,3 +120,30 @@ class RecipeViewSet(ModelViewSet):
         obj = get_object_or_404(models, user=user, recipe__id=pk)
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        methods=('get',),
+        permission_classes=[IsAuthenticated],
+    )
+    def download_shopping_cart(self, request):
+        """
+        Получение списка покупок у текущего
+        пользователя из базы данных.
+        """
+        shopping_cart = ShoppingCart.objects.filter(user=request.user)
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="shopping_cart.pdf"'
+        pdf_filename = 'shopping_cart.pdf' 
+        pdf = canvas.Canvas(pdf_filename)
+
+        y = 800 
+        for item in shopping_cart:
+            data = f'ID: {item.id}, User: {item.user}, Recipe: {item.recipe}'
+            pdf.drawString(100, y, data)
+            y -= 20
+            pdf.showPage() 
+
+        pdf.save() 
+        return response

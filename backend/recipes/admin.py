@@ -36,12 +36,13 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    """Настроенная админ-панель Тегов."""
+    """Настроенная админ-панель Рецептов."""
     # inlines = [
     #     CompositionOfDish,
     #     TagRecipeInline,
     # ]
     list_display = (
+        'id',
         'author',
         'name',
         'image',

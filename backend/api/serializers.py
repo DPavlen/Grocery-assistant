@@ -1,6 +1,7 @@
 from django.db.models import F
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.forms import ValidationError
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
@@ -48,17 +49,17 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
     cooking_time = serializers.IntegerField(
-        validators=[
-            MinValueValidator(
-                LenghtField.MIN_COOKING_TIME.value,
-                message=f'Время приготовления блюда должно быть '
-                        f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
-            MaxValueValidator(
-                LenghtField.MAX_COOKING_TIME.value,
-                message=f'Время приготовления блюда не превышает '
-                        f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
-        ]
-    )
+            validators=[
+                MinValueValidator(
+                    LenghtField.MIN_COOKING_TIME.value,
+                    message=f'Время приготовления блюда должно быть '
+                            f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
+                MaxValueValidator(
+                    LenghtField.MAX_COOKING_TIME.value,
+                    message=f'Время приготовления блюда не превышает '
+                            f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
+            ]
+        )
 
     class Meta:
         model = Recipe
@@ -107,12 +108,18 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Сотава блюда."""
     id = IntegerField(write_only=True)
+    # name = serializers.ReadOnlyField(source='ingredient.name')
+    # measurement_unit = serializers.ReadOnlyField(
+    #     source='ingredient.measurements_unit'
+    # )
 
     class Meta:
         model = CompositionOfDish
         fields = (
             'id',
             'amount',
+            # 'measurement_unit', 
+            # 'amount'
         )
 
 
@@ -126,6 +133,18 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     ingredients = CompositionOfDishRecordSerializer(many=True)
     image = Base64ImageField()
+    cooking_time = serializers.IntegerField(
+            validators=[
+                MinValueValidator(
+                    LenghtField.MIN_COOKING_TIME.value,
+                    message=f'Время приготовления блюда должно быть '
+                            f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
+                MaxValueValidator(
+                    LenghtField.MAX_COOKING_TIME.value,
+                    message=f'Время приготовления блюда не превышает '
+                            f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
+            ]
+        )
 
     class Meta:
         model = Recipe
@@ -210,3 +229,49 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
             'image',
             'cooking_time',
         )
+
+
+class ShoppingCartSerializer(serializers.Serializer):
+    """Добавление и удаление рецептов из корзины покупок."""
+
+    def validate(self, data):
+        recipe_id = self.context['recipe_id']
+        user = self.context['request'].user
+        if ShoppingCart.objects.filter(
+            user=user, recipe_id=recipe_id
+        ).exists():
+            raise serializers.ValidationError(
+                'Этот рецепт уже есть в списке покупок'
+            )
+        return data
+
+    def create(self, validated_data):
+        recipe = get_object_or_404(Recipe, pk=validated_data['id'])
+        ShoppingCart.objects.create(
+            user=self.context['request'].user,
+            recipe=recipe
+        )
+        serializer = ShortRecipeSerializer
+        return serializer.data
+
+
+class FavoritesListSerializer(serializers.Serializer):
+    """Сериализатор для добавления рецепта в избранное."""
+
+    def validate(self, data):
+        recipe_id = self.context['recipe_id']
+        user = self.context['request'].user
+        if Favorite.objects.filter(
+            user=user, recipe_id=recipe_id
+        ).exists():
+            raise serializers.ValidationError(
+                'Этот рецепт уже есть в избранном'
+            )
+        return data
+
+    def create(self, validated_data):
+        recipe = get_object_or_404(Recipe, pk=validated_data['id'])
+        user = self.context['request'].user
+        Favorite.objects.create(user=user, recipe=recipe)
+        serializer = ShortRecipeSerializer(recipe)
+        return serializer.data
