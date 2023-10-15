@@ -2,6 +2,7 @@ from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.forms import DateTimeField
 
 from core.constants import LenghtField
 from core.validators import SlugValidator, ColorValidator
@@ -115,11 +116,15 @@ class Recipe(models.Model):
                         f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
         ]
     )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации рецепта',
+        auto_now_add=True
+    )
 
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ['-id']
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.name

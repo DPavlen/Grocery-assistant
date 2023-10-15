@@ -11,7 +11,8 @@ from core.constants import LenghtField
 from recipes.models import (
     Ingredient, Tag, Recipe,
     CompositionOfDish, ShoppingCart, Favorite)
-from users.serializers import UserSerializer
+from users.serializers import (
+    UserSerializer, MyUserSerializer, MyUserCreateSerializer)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -43,6 +44,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Рецептов
     и связанных с ним списка покупок и избранного.Только чтение."""
     tags = TagSerializer(many=True, read_only=True)
+    # author = MyUserSerializer(read_only=True)
     author = UserSerializer(read_only=True)
     ingredients = SerializerMethodField()
     image = Base64ImageField()
@@ -68,11 +70,14 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
+            'is_favorited',
+            'is_in_shopping_cart',
+            'name',
             'image',
             'text',
             'cooking_time',
-            'is_favorited',
-            'is_in_shopping_cart',
+            # 'is_favorited',
+            # 'is_in_shopping_cart',
         )
         read_only_fields = (
             'is_favorite',
@@ -108,9 +113,13 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Сотава блюда."""
     id = IntegerField(write_only=True)
-    # name = serializers.ReadOnlyField(source='ingredient.name')
-    # measurement_unit = serializers.ReadOnlyField(
-    #     source='ingredient.measurements_unit'
+    # id = serializers.PrimaryKeyRelatedField(
+    #     queryset=Ingredient.objects.all(),
+    #     source='ingredient',
+    # )
+    # amount = serializers.IntegerField(
+    #     max_value=LenghtField.MIN_INGREDIENT_VALUE,
+    #     min_value=LenghtField.MAX_INGREDIENT_VALUE
     # )
 
     class Meta:
@@ -129,8 +138,10 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
     У одого рецепта может быть несолько связанных тегов(набор)."""
     id = IntegerField(read_only=True)
     tags = PrimaryKeyRelatedField(queryset=Tag.objects.all(),
-                                  many=True)
+                                  many=True,)
+    # Это User Josera
     author = UserSerializer(read_only=True)
+    # author = MyUserSerializer(read_only=True)
     ingredients = CompositionOfDishRecordSerializer(many=True)
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
@@ -158,6 +169,9 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
+        # extra_kwargs = {'tags': {'required': True},
+        #                 'ingredients': {'required': True}
+        #                 }
 
     def create_composition_of_dish(self, ingredients, recipe):
         """Cоздание связей между ингредиентами и рецептом.

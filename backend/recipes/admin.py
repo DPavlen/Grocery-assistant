@@ -47,7 +47,8 @@ class RecipeAdmin(admin.ModelAdmin):
         'name',
         'image',
         'text',
-        'cooking_time'
+        'cooking_time',
+        'pub_date',
     )
     search_fields = ('author',)
     list_filter = ('author', 'name', 'tags',)
@@ -110,15 +111,17 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     search_fields = ('user',)
 
 
-# class CompositionOfDish(admin.TabularInline):
-#     """Отображение состава блюда в виде таблицы. 
-#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
-#     model = Recipe.ingredients.through
-#     min_num = 1
+class CompositionOfDish(admin.TabularInline):
+    """Отображение состава блюда в виде таблицы. 
+    Промежуточная моделт Рецепты, минимум с 1-й строкой."""
+    # model = Recipe.ingredients.through
+    model = CompositionOfDish
+    extra = 1
+    min_num = 1
 
 
-# class TagRecipeInline(admin.TabularInline):
-#     """Отображение тегов в виде таблицы. 
-#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
-#     model = Recipe.tags.through
-#     min_num = 1
+class TagRecipeInline(admin.TabularInline):
+    """Отображение тегов в виде таблицы. 
+    Промежуточная моделт Рецепты, минимум с 1-й строкой."""
+    model = Recipe.tags.through
+    min_num = 1

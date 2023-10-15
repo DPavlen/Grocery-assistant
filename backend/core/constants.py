@@ -45,3 +45,7 @@ class LenghtField(IntEnum):
 
     # Минимальная длина поля last_name
     MIN_LENGHT_LAST_NAME = 1
+   
+    # 
+    MIN_INGREDIENT_VALUE = 1
+    MAX_INGREDIENT_VALUE = 1000
