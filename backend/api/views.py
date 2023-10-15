@@ -1,4 +1,5 @@
 import io
+from django.forms import ValidationError
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
@@ -89,7 +90,14 @@ class RecipeViewSet(ModelViewSet):
         
     #     kwargs['partial'] = False
     #     return self.update(request, *args, **kwargs)
-
+    def destroy(self, request, *args, **kwargs):
+        """Проверяем, является ли пользователь автором рецепта.
+        И если нет, то не даем удалять чужой рецепт."""
+        instance = self.get_object()
+        if instance.author != request.user:
+            raise PermissionDenied("Вы не можете удалить чужой рецепт")
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
@@ -126,6 +134,7 @@ class RecipeViewSet(ModelViewSet):
 
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов."""
+        
         recipe = get_object_or_404(Recipe, id=pk)
         if models.objects.filter(user=user, recipe=recipe).exists():
             return Response({'Ошибка': 'Рецепт уже добавлен!'},
