@@ -133,8 +133,11 @@ class RecipeViewSet(ModelViewSet):
         return self.delete_recipe(ShoppingCart, request.user, pk)
 
     def add_recipe(self, models, user, pk):
-        """Метод добавления рецептов."""
-        
+        """Метод добавления рецептов. Различные проверки."""
+        if not Recipe.objects.filter(id=pk).exists():
+            return Response({'Ошибка': 'Такого рецепта не существует!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
         recipe = get_object_or_404(Recipe, id=pk)
         if models.objects.filter(user=user, recipe=recipe).exists():
             return Response({'Ошибка': 'Рецепт уже добавлен!'},

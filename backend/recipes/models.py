@@ -61,6 +61,12 @@ class Tag(models.Model):
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
         ordering = ['id']
+        constraints = [
+            UniqueConstraint(
+                fields=('name', 'slug'),
+                name='unique_slug_in_name',
+            )
+        ]
 
     def __str__(self):
         return self.name
