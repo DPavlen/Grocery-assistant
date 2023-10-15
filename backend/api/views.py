@@ -1,6 +1,6 @@
 import io
 from django.forms import ValidationError
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 #
@@ -81,15 +81,15 @@ class RecipeViewSet(ModelViewSet):
     
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
-
-    # def partial_update(self, request, *args, **kwargs):
-    #     request._request.PUT = request._request.PATCH
-    #     return self.update(request, *args, **kwargs)
+ 
+    def partial_update(self, request, *args, **kwargs):
+        """Обертка над методом update и для частичного обновления данных. 
+        В данном случае, параметр partial устанавливается в False, 
+        чтобы гарантировать, что обновление будет полным (не частичным). 
+        Затем метод update вызывается с переданными аргументами."""
+        kwargs['partial'] = False
+        return self.update(request, *args, **kwargs)
     
-    # def partial_update(self, request, *args, **kwargs):
-        
-    #     kwargs['partial'] = False
-    #     return self.update(request, *args, **kwargs)
     def destroy(self, request, *args, **kwargs):
         """Проверяем, является ли пользователь автором рецепта.
         И если нет, то не даем удалять чужой рецепт."""
