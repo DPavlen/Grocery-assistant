@@ -29,10 +29,12 @@ class FilterRecipe(FilterSet):
         to_field_name='slug',
         queryset=Tag.objects.all(),
     )
-    is_favorited = filters.NumberFilter(method='filter_is_favorited')
-    is_in_shopping = filters.NumberFilter(
-        method='filte_is_in_shopping_cart'
-    )
+    # is_favorited = filters.NumberFilter(method='filter_is_favorited')
+    # is_in_shopping = filters.NumberFilter(
+    #     method='filte_is_in_shopping_cart'
+    # )
+    is_favorited = filters.BooleanFilter(method='filter_is_favorited')
+    is_in_shopping = filters.BooleanFilter(method='filter_is_in_shopping_cart')
 
     class Meta:
         model = Recipe
@@ -47,7 +49,7 @@ class FilterRecipe(FilterSet):
         """Фильтрует Recipe по тому, является ли конкретный
         рецепт избранным для определенного пользователя,
         на основе переданных значений value"""
-
+    
         if value and self.request.user.is_authenticated:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
@@ -59,4 +61,6 @@ class FilterRecipe(FilterSet):
 
         if value and self.request.user.is_authenticated:
             return queryset.filter(shopping_list__user=self.request.user)
-        return
+        return queryset
+
+    

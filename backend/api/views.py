@@ -59,25 +59,17 @@ class RecipeViewSet(ModelViewSet):
     # def perform_create(self, serializer, **kwargs):
     #     serializer.save(author=self.request.user)
     def get_serializer_class(self):
-        # return (RecipeReadSerializer if self.request.method in SAFE_METHODS
-                # else RecipeRecordSerializer)
+        return (RecipeReadSerializer if self.request.method in SAFE_METHODS
+                else RecipeRecordSerializer)
     
-        if self.action in SAFE_METHODS:
-            return RecipeReadSerializer
-        elif self.action == 'favorite':
-            return FavoritesListSerializer
-        elif self.action == 'shopping_cart':
-            return ShoppingCartSerializer
-        return RecipeRecordSerializer
+        # if self.action in SAFE_METHODS:
+        #     return RecipeReadSerializer
+        # return RecipeRecordSerializer
     
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    
-    # def get_serializer_class(self):
-    #     return (RecipeReadSerializer if self.request.method in SAFE_METHODS
-    #             else RecipeRecordSerializer)
     
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
@@ -112,6 +104,9 @@ class RecipeViewSet(ModelViewSet):
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         """Удаление рецептов из раздела Избранное."""
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED,
+                            data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(Favorite, request.user, pk)
 
     @action(
@@ -126,10 +121,11 @@ class RecipeViewSet(ModelViewSet):
 
     @shopping_сart.mapping.delete
     def delete_shopping_сart(self, request, pk):
+        """Удаление рецептов в раздел Корзина покупок."""
         if not request.user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED,
                         data={'detail': 'User is not authenticated.'})
-        """Удаление рецептов в раздел Корзина покупок."""
+        # """Удаление рецептов в раздел Корзина покупок."""
         return self.delete_recipe(ShoppingCart, request.user, pk)
 
     def add_recipe(self, models, user, pk):

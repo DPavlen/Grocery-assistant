@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
@@ -49,13 +50,22 @@ class CustomUserViewSet(UserViewSet):
     @subscribe.mapping.delete
     def delete_subscribe(self, request, **kwargs):
         """Отписка от автора рецептов."""
-        subscription = get_object_or_404(
-            Subscriptions,
-            user=request.user,
-            author=get_object_or_404(User, id=self.kwargs.get('id'))
+        # subscription = get_object_or_404(
+        #     Subscriptions,
+        #     user=request.user,
+        #     author=get_object_or_404(User, id=self.kwargs.get('id'))
+        # )
+        # subscription.delete()
+        # return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
+        try:
+            subscription = Subscriptions.objects.get(
+                user=request.user,
+                author=get_object_or_404(User, id=self.kwargs.get('id'))
         )
-        subscription.delete()
-        return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
+            subscription.delete()
+            return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
+        except ObjectDoesNotExist:
+            return Response('Подписка не существует', status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,

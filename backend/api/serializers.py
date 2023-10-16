@@ -172,6 +172,31 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         # extra_kwargs = {'tags': {'required': True},
         #                 'ingredients': {'required': True}
         #                 }
+    def validate(self, data):
+        """Проверяет валидность данных при создании или изменении рецепта.
+        Ингредиенты, их количество и повтор ингредиентов"""
+        initial_data = self.initial_data
+        for field in ('tags', 'ingredients', 'name', 'text', 'cooking_time'):
+            if not initial_data.get(field):
+                raise ValidationError(f'Не заполнено поле {field}')
+        ingredients = initial_data.get('ingredients')
+        ingredients_set = set()
+        for ingredient in ingredients:
+            amount = int(ingredient.get('amount'))
+            ingredient_id = ingredient.get('id')
+            if not amount or not ingredient_id:
+                raise ValidationError(
+                    f'Необходимо указать {amount} и {id} ' 
+                    f'для создания ингредиента.'
+                )
+            if not amount > 0:
+                raise ValidationError(f'Количество ингредиента {amount} '
+                                      'не может быть меньше 1.')
+            if ingredient_id in ingredients_set:
+                raise ValidationError('Необходимо исключить '
+                                      'повторяющиеся ингредиенты.')
+            ingredients_set.add(ingredient_id)
+        return data
 
     def create_composition_of_dish(self, ingredients, recipe):
         """Cоздание связей между ингредиентами и рецептом.
