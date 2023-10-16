@@ -44,8 +44,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Рецептов
     и связанных с ним списка покупок и избранного.Только чтение."""
     tags = TagSerializer(many=True, read_only=True)
-    # author = MyUserSerializer(read_only=True)
-    author = UserSerializer(read_only=True)
+    author = MyUserSerializer(read_only=True)
+    # author = UserSerializer(read_only=True)
     ingredients = SerializerMethodField()
     image = Base64ImageField()
     is_favorited = SerializerMethodField()
@@ -140,8 +140,8 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
     tags = PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                   many=True,)
     # Это User Josera
-    author = UserSerializer(read_only=True)
-    # author = MyUserSerializer(read_only=True)
+    # author = UserSerializer(read_only=True)
+    author = MyUserSerializer(read_only=True)
     ingredients = CompositionOfDishRecordSerializer(many=True)
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(

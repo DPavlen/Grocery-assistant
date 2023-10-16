@@ -18,7 +18,8 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import FilterIngredient, FilterRecipe
 from api.pagination import PaginationCust
-from api.permissions import IsAdminOrReadOnly, IsAuthorOrAdminOrIsAuthReadOnly
+from api.permissions import (IsAdminOrReadOnly, 
+                             IsAuthorOrAdminOrIsAuthReadOnly, IsAuthorPermission)
 from api.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeRecordSerializer,
                              ShortRecipeSerializer, ShoppingCartSerializer,
@@ -49,9 +50,15 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
-    queryset = Recipe.objects.all()
+    # queryset = Recipe.objects.all()
+    queryset = (
+        Recipe.objects.prefetch_related('author', 'tags', 'ingredients').all()
+    )
     # permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly | IsAdminOrReadOnly,)
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    # permission_classes = (IsAuthenticatedOrReadOnly,) 16 errors
+    # permission_classes = (IsAdminOrReadOnly,)
+    # 17 errors
+    permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly,)
     pagination_class = PaginationCust
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
@@ -59,6 +66,7 @@ class RecipeViewSet(ModelViewSet):
     # def perform_create(self, serializer, **kwargs):
     #     serializer.save(author=self.request.user)
     def get_serializer_class(self):
+        """Выбор сериализатора в зависимости от действия."""
         return (RecipeReadSerializer if self.request.method in SAFE_METHODS
                 else RecipeRecordSerializer)
     
@@ -95,25 +103,25 @@ class RecipeViewSet(ModelViewSet):
         detail=True,
         methods=['post'],
         serializer_class=FavoritesListSerializer,
-        permission_classes=[IsAuthenticated]
+        permission_classes=[IsAuthorPermission]
     )
     def favorite(self, request, pk):
         """Добавление рецептов в раздел Избранное."""
         return self.add_recipe(Favorite, request.user, pk)
-
+       
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         """Удаление рецептов из раздела Избранное."""
-        if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED,
-                            data={'detail': 'User is not authenticated.'})
+        # if not request.user.is_authenticated:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED,
+        #                     data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(Favorite, request.user, pk)
 
     @action(
         detail=True,
         methods=['post'],
         serializer_class=ShoppingCartSerializer,
-        permission_classes=[IsAuthenticated]
+        permission_classes=[IsAuthorPermission]
     )
     def shopping_сart(self, request,  pk):
         """Добавление рецептов в раздел Корзина покупок."""
@@ -122,10 +130,9 @@ class RecipeViewSet(ModelViewSet):
     @shopping_сart.mapping.delete
     def delete_shopping_сart(self, request, pk):
         """Удаление рецептов в раздел Корзина покупок."""
-        if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED,
-                        data={'detail': 'User is not authenticated.'})
-        # """Удаление рецептов в раздел Корзина покупок."""
+        # if not request.user.is_authenticated:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED,
+        #                 data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(ShoppingCart, request.user, pk)
 
     def add_recipe(self, models, user, pk):
@@ -155,14 +162,12 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=False,
         methods=('get',),
-        permission_classes=[IsAuthenticated],
+        permission_classes=[IsAuthorPermission],
     )
     def download_shopping_cart(self, request):
-        """
-        Получение списка покупок у текущего
-        пользователя из базы данных.
-        Использует этот буфер для создания HTTP-ответа с прикрепленным PDF-файлом.
-        """
+        """Получение списка покупок у текущего пользователя из базы данных.
+        Использует этот буфер для создания 
+        HTTP-ответа с прикрепленным PDF-файлом."""
         user = self.request.user
         if not user.ShoppingCart.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
