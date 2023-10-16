@@ -1,4 +1,5 @@
 import io
+from django.db.utils import IntegrityError
 from django.forms import ValidationError
 from django.http import Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -87,6 +88,9 @@ class RecipeViewSet(ModelViewSet):
         В данном случае, параметр partial устанавливается в False, 
         чтобы гарантировать, что обновление будет полным (не частичным). 
         Затем метод update вызывается с переданными аргументами."""
+        instance = self.get_object()
+        if instance.author != request.user:
+            raise PermissionDenied('Вы не можете обновить чужой рецепт')
         kwargs['partial'] = False
         return self.update(request, *args, **kwargs)
     
@@ -95,7 +99,7 @@ class RecipeViewSet(ModelViewSet):
         И если нет, то не даем удалять чужой рецепт."""
         instance = self.get_object()
         if instance.author != request.user:
-            raise PermissionDenied("Вы не можете удалить чужой рецепт")
+            raise PermissionDenied('Вы не можете удалить чужой рецепт')
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -137,17 +141,20 @@ class RecipeViewSet(ModelViewSet):
 
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов. Различные проверки."""
-        if not Recipe.objects.filter(id=pk).exists():
-            return Response({'Ошибка': 'Такого рецепта не существует!'},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-        recipe = get_object_or_404(Recipe, id=pk)
-        if models.objects.filter(user=user, recipe=recipe).exists():
-            return Response({'Ошибка': 'Рецепт уже добавлен!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        models.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(recipe)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # if not Recipe.objects.filter(id=pk).exists():
+        #     return Response({'Ошибка': 'Такого рецепта не существует!'},
+        #                 status=status.HTTP_400_BAD_REQUEST)
+        try:
+            recipe = get_object_or_404(Recipe, id=pk)
+            # if models.objects.filter(user=user, recipe=recipe).exists():
+            #     return Response({'Ошибка': 'Рецепт уже добавлен!'},
+            #                 status=status.HTTP_400_BAD_REQUEST)
+            models.objects.create(user=user, recipe=recipe)
+            serializer = ShortRecipeSerializer(recipe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            return Response(status=status.HTTP_400_BAD_REQUEST, 
+                            data={'detail': 'Рецепт уже добавлен!'})
 
     def delete_recipe(self, models, user, pk):
         """Метод удаления рецепта."""
@@ -156,7 +163,7 @@ class RecipeViewSet(ModelViewSet):
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except models.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST, 
+            return Response(status=status.HTTP_404_NOT_FOUND, 
                             data={'detail': 'Not found.'})
 
     @action(
@@ -168,9 +175,7 @@ class RecipeViewSet(ModelViewSet):
         """Получение списка покупок у текущего пользователя из базы данных.
         Использует этот буфер для создания 
         HTTP-ответа с прикрепленным PDF-файлом."""
-        user = self.request.user
-        if not user.ShoppingCart.exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         shopping_cart = ShoppingCart.objects.filter(user=request.user)
         buy_list_text = create_shopping_list_report(shopping_cart)
         # Создание HttpResponse с содержимым буфера
