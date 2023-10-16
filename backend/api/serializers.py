@@ -169,33 +169,51 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         )
-        # extra_kwargs = {'tags': {'required': True},
-        #                 'ingredients': {'required': True}
-        #                 }
+
     def validate(self, data):
-        """Проверяет валидность данных при создании или изменении рецепта.
-        Ингредиенты, их количество и повтор ингредиентов"""
-        initial_data = self.initial_data
-        for field in ('tags', 'ingredients', 'name', 'text', 'cooking_time'):
-            if not initial_data.get(field):
-                raise ValidationError(f'Не заполнено поле {field}')
-        ingredients = initial_data.get('ingredients')
-        ingredients_set = set()
-        for ingredient in ingredients:
-            amount = int(ingredient.get('amount'))
-            ingredient_id = ingredient.get('id')
-            if not amount or not ingredient_id:
-                raise ValidationError(
-                    f'Необходимо указать {amount} и {id} ' 
-                    f'для создания ингредиента.'
-                )
-            if not amount > 0:
-                raise ValidationError(f'Количество ингредиента {amount} '
-                                      'не может быть меньше 1.')
-            if ingredient_id in ingredients_set:
-                raise ValidationError('Необходимо исключить '
-                                      'повторяющиеся ингредиенты.')
-            ingredients_set.add(ingredient_id)
+        """Дополнительные проверки наличия и количества
+        ингредиентов и тегов в рецепте(уникальность, наличие и прочее.)."""
+        
+        # Проверка на наличие тегов.
+        tags = data.get('tags', [])
+        if not tags:
+            raise serializers.ValidationError(
+                {'tags': 'Укажите хотя бы один тег.'})
+
+        # Проверка на наличие ингредиентов в рецепте.
+        ingredients = data.get('ingredients', [])
+        if not ingredients:
+            raise serializers.ValidationError(
+                {'ingredients': 'Укажите хотя бы один ингредиент.'})
+
+        # Проверка на уникальность тегов.
+        tag_ids = [tag.id for tag in tags]
+        if len(tag_ids) != len(set(tag_ids)):
+            raise serializers.ValidationError(
+                {'tags': 'Теги не могут дублироваться.'})
+
+        # Проверка на уникальность ингредиентов в рецепте.
+        ingredient_ids = [ingredient['id'] for ingredient in ingredients]
+        if len(ingredient_ids) != len(set(ingredient_ids)):
+            raise serializers.ValidationError(
+                {'ingredients': 'Ингредиенты не могут дублироваться.'})
+
+        # Дополнительная проверка ингредиентов на минимальное количество.
+        if len(ingredients) < 1:
+            raise ValidationError(
+                {"ingredients": f"Нужен минимум "
+                                f"{1} ингредиент!"})
+        
+        # Проверка на пустое поле тегов в рецепте.
+        if not data.get('tags'):
+            raise serializers.ValidationError(
+                {'tags': 'Поле тегов не может быть пустым.'})
+
+        # Проверка на пустое поле ингредиентов в рецепте.
+        if not data.get('ingredients'):
+            raise serializers.ValidationError(
+                {'ingredients': 'Поле ингредиентов не может быть пустым.'})
+        
         return data
 
     def create_composition_of_dish(self, ingredients, recipe):
@@ -218,6 +236,15 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         Создаем рецепт и связываем с тегом."""
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients', [])
+        # Проверка на несуществующий ингредиент в рецепте
+        for ingredient in ingredients:
+            ingredient = ingredient['id']
+            try:
+                Ingredient.objects.get(id=ingredient)
+            except Ingredient.DoesNotExist:
+                raise serializers.ValidationError(
+                    {'Ingredients': f'Такого ингредиента id='
+                     f'{ingredient} не существует!'})
         # Проверка что мы будем создавать рецепт с ингредиентом
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
@@ -229,6 +256,15 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         """Обновление рецепта."""
         tags = validated_data.pop('tags', [])
         ingredients = validated_data.pop('ingredients', [])
+        # Проверка на несуществующий ингредиент в рецепте
+        for ingredient in ingredients:
+            ingredient = ingredient['id']
+            try:
+                Ingredient.objects.get(id=ingredient)
+            except Ingredient.DoesNotExist:
+                raise serializers.ValidationError(
+                    {'Ingredients': f'Такого ингредиента id='
+                     f'{ingredient} не существует!'})
         instance.tags.set(tags)
         instance.ingredients.clear()
         self.create_composition_of_dish(

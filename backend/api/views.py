@@ -55,10 +55,10 @@ class RecipeViewSet(ModelViewSet):
         Recipe.objects.prefetch_related('author', 'tags', 'ingredients').all()
     )
     # permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly | IsAdminOrReadOnly,)
-    # permission_classes = (IsAuthenticatedOrReadOnly,) 16 errors
-    # permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,) # 16 errors
+    # permission_classes = (IsAuthenticated,)
     # 17 errors
-    permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly,)
+    # permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly,)
     pagination_class = PaginationCust
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
