@@ -2,16 +2,17 @@
 
 version: '3'
 
-# volumes:
-#   sqlite_data:
+# Перечень volume:
+volumes:
+  pg_data:
 
 
 services:
-  # db:
-  #   image: postgres:13
-  #   env_file: .env
-  #   volumes:
-      # - pg_data:/var/lib/postgresql/data
+  db:
+    image: postgres:14
+    env_file: .env
+    # volumes:
+    #   - pg_data:/var/lib/postgresql/data
   backend:
     build: ./backend/
     env_file: .env

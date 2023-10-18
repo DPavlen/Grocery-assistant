@@ -7,16 +7,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = os.getenv('SECRET_KEY',
-                       'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
+SECRET_KEY = ('django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
+# SECRET_KEY = os.getenv('SECRET_KEY',
+#                        'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
 
 # DEBUG = os.getenv('DEBUG', 'False') == 'True'
 DEBUG = 'True'
 
+ALLOWED_HOSTS = []
+
 # ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS','localhost,127.0.0.1').split(',')
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+# ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
 # ALLOWED_HOSTS = [
 #     'localhost',
 #     '127.0.0.1',
@@ -86,23 +88,40 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': '/data/db.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-} 
-
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': os.getenv('DB_ENGINE'),
-#         'NAME': os.getenv('DB_NAME'),
-#         'USER': os.getenv('POSTGRES_USER'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#         'HOST': os.getenv('DB_HOST'),
-#         'PORT': os.getenv('DB_PORT'),
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         # 'NAME': '/data/db.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# } 
+
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pavlen',
+        'USER': 'pavlen',
+        'PASSWORD': '12345',
+        'PORT': '5432'
+    }
+}
+
+
+
+
+# # Этими строчками замените текущую настройку DATABASES
+# DATABASES = {
+#     'default': {
+#         # Меняем настройку Django: теперь для работы будет использоваться
+#         # бэкенд postgresql
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('POSTGRES_DB', 'django'),
+#         'USER': os.getenv('POSTGRES_USER', 'django'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+#         'HOST': os.getenv('DB_HOST', ''),
+#         'PORT': os.getenv('DB_PORT', 5432)
 #     }
 # }
 
