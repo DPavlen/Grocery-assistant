@@ -5,23 +5,21 @@ version: '3'
 # Перечень volume:
 volumes:
   pg_data:
-
+  static:
+  media:
 
 services:
   db:
-    image: postgres:14
+    image: postgres:13.0-alpine
     env_file: .env
-    # volumes:
-    #   - pg_data:/var/lib/postgresql/data
+    volumes:
+      - pg_data:/var/lib/postgresql/data
   backend:
     build: ./backend/
     env_file: .env
     volumes:
       - static:/backend_static
       - media:/app/media
-      - sqlite_data:/data
-  volumes:
-    sqlite_data:
 
   frontend:
     build: ./frontend/

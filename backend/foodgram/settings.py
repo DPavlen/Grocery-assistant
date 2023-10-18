@@ -1,24 +1,24 @@
 import os
 from pathlib import Path
-
+from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = ('django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
+# SECRET_KEY = ('django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
 # SECRET_KEY = os.getenv('SECRET_KEY',
 #                        'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
+SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
-# DEBUG = os.getenv('DEBUG', 'False') == 'True'
-DEBUG = 'True'
 
-ALLOWED_HOSTS = []
 
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS','localhost,127.0.0.1').split(',')
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
-# ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+# DEBUG = 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
+
 # ALLOWED_HOSTS = [
 #     'localhost',
 #     '127.0.0.1',
@@ -95,35 +95,42 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # } 
+# POSTGRES_USER=django_user
+# POSTGRES_PASSWORD=mysecretpassword
+# POSTGRES_DB=django
+# # Добавляем переменные для Django-проекта:
+# DB_HOST=db
+# DB_PORT=5432
+# # SECURITY WARNING: keep the secret key used in production secret!
+# SECRET_KEY = 'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt'
 
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pavlen',
-        'USER': 'pavlen',
-        'PASSWORD': '12345',
-        'PORT': '5432'
-    }
-}
-
-
-
-
-# # Этими строчками замените текущую настройку DATABASES
 # DATABASES = {
 #     'default': {
-#         # Меняем настройку Django: теперь для работы будет использоваться
-#         # бэкенд postgresql
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.getenv('POSTGRES_DB', 'django'),
-#         'USER': os.getenv('POSTGRES_USER', 'django'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-#         'HOST': os.getenv('DB_HOST', ''),
-#         'PORT': os.getenv('DB_PORT', 5432)
+#         'NAME': 'django',
+#         'USER': 'django_user',
+#         'PASSWORD': 'django',
+#         'PORT': '5432'
 #     }
 # }
+
+
+
+
+# Этими строчками замените текущую настройку DATABASES
+DATABASES = {
+    'default': {
+        # Меняем настройку Django: теперь для работы будет использоваться
+        # бэкенд postgresql
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', 5432)
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -195,10 +202,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
