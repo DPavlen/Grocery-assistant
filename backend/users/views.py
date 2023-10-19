@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from api.permissions import IsAdminOrReadOnly
 from users.serializers import (
     MyUserSerializer, UserSubscriptionsSerializer)
-# UserMeSerializer,)
 from users.models import User, Subscriptions
 
 

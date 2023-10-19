@@ -23,8 +23,7 @@ from api.permissions import (IsAdminOrReadOnly,
                              IsAuthorOrAdminOrIsAuthReadOnly, IsAuthorPermission)
 from api.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeRecordSerializer,
-                             ShortRecipeSerializer, ShoppingCartSerializer,
-                             FavoritesListSerializer)
+                             ShortRecipeSerializer)
 from core.utils import create_shopping_list_report
 from recipes.models import (
     Ingredient, Tag, Recipe, Favorite, ShoppingCart, CompositionOfDish)
@@ -52,7 +51,7 @@ class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
     queryset = Recipe.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthorOrAdminOrIsAuthReadOnly]
     pagination_class = PaginationCust
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
@@ -94,6 +93,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post'],
+        permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
         """Добавление рецептов в раздел Избранное."""
@@ -111,12 +111,13 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post'],
+        permission_classes=[IsAuthenticated]
     )
-    def shopping_сart(self, request,  pk):
+    def shopping_cart(self, request, pk):
         """Добавление рецептов в раздел Корзина покупок."""
         return self.add_recipe(ShoppingCart, request.user, pk)
 
-    @shopping_сart.mapping.delete
+    @shopping_cart.mapping.delete 
     def delete_shopping_сart(self, request, pk):
         """Удаление рецептов в раздел Корзина покупок."""
         # if not request.user.is_authenticated:
