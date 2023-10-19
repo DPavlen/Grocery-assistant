@@ -19,7 +19,7 @@ class LenghtField(IntEnum):
     MAX_LENGT_NAME_COLOR = 7
     # Количество ингедиентов CompositionOfDish.amount
     MIN_AMOUNT_INREDIENT = 1
-    MAX_AMOUNT_INREDIENT = 100
+    MAX_AMOUNT_INREDIENT = 10000
 
     # Атрибуты приложения Юзеров
     # Максимальная длина поля email User.email

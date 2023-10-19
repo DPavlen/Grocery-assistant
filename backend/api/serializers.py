@@ -306,47 +306,47 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         )
 
 
-class ShoppingCartSerializer(serializers.Serializer):
-    """Добавление и удаление рецептов из корзины покупок."""
+# class ShoppingCartSerializer(serializers.Serializer):
+#     """Добавление и удаление рецептов из корзины покупок."""
 
-    def validate(self, data):
-        recipe_id = self.context['recipe_id']
-        user = self.context['request'].user
-        if ShoppingCart.objects.filter(
-            user=user, recipe_id=recipe_id
-        ).exists():
-            raise serializers.ValidationError(
-                'Этот рецепт уже есть в списке покупок'
-            )
-        return data
+#     def validate(self, data):
+#         recipe_id = self.context['recipe_id']
+#         user = self.context['request'].user
+#         if ShoppingCart.objects.filter(
+#             user=user, recipe_id=recipe_id
+#         ).exists():
+#             raise serializers.ValidationError(
+#                 'Этот рецепт уже есть в списке покупок'
+#             )
+#         return data
 
-    def create(self, validated_data):
-        recipe = get_object_or_404(Recipe, pk=validated_data['id'])
-        ShoppingCart.objects.create(
-            user=self.context['request'].user,
-            recipe=recipe
-        )
-        serializer = ShortRecipeSerializer
-        return serializer.data
+#     def create(self, validated_data):
+#         recipe = get_object_or_404(Recipe, pk=validated_data['id'])
+#         ShoppingCart.objects.create(
+#             user=self.context['request'].user,
+#             recipe=recipe
+#         )
+#         serializer = ShortRecipeSerializer
+#         return serializer.data
 
 
-class FavoritesListSerializer(serializers.Serializer):
-    """Сериализатор для добавления рецепта в избранное."""
+# class FavoritesListSerializer(serializers.Serializer):
+#     """Сериализатор для добавления рецепта в избранное."""
 
-    def validate(self, data):
-        recipe_id = self.context['recipe_id']
-        user = self.context['request'].user
-        if Favorite.objects.filter(
-            user=user, recipe_id=recipe_id
-        ).exists():
-            raise serializers.ValidationError(
-                'Этот рецепт уже есть в избранном'
-            )
-        return data
+#     def validate(self, data):
+#         recipe_id = self.context['recipe_id']
+#         user = self.context['request'].user
+#         if Favorite.objects.filter(
+#             user=user, recipe_id=recipe_id
+#         ).exists():
+#             raise serializers.ValidationError(
+#                 'Этот рецепт уже есть в избранном'
+#             )
+#         return data
 
-    def create(self, validated_data):
-        recipe = get_object_or_404(Recipe, pk=validated_data['id'])
-        user = self.context['request'].user
-        Favorite.objects.create(user=user, recipe=recipe)
-        serializer = ShortRecipeSerializer(recipe)
-        return serializer.data
+#     def create(self, validated_data):
+#         recipe = get_object_or_404(Recipe, pk=validated_data['id'])
+#         user = self.context['request'].user
+#         Favorite.objects.create(user=user, recipe=recipe)
+#         serializer = ShortRecipeSerializer(recipe)
+#         return serializer.data

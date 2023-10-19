@@ -4,7 +4,7 @@ from rest_framework import permissions
 class IsAdminOrReadOnly(permissions.BasePermission):
     """Действие может выполнять строго только админ."""
 
-    def has_permission(self, request, view):
+    def has_permission(self, request,view, obj):
         return (
             request.method in permissions.SAFE_METHODS
             or request.user.is_admin

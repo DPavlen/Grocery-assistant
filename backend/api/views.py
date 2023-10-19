@@ -51,15 +51,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Работа с рецептами. Отображение избранного, списка покупок.
     RecipeViewSet отрабатывает по 2 сериализаторам:Чтение и запись."""
-    # queryset = Recipe.objects.all()
-    queryset = (
-        Recipe.objects.prefetch_related('author', 'tags', 'ingredients').all()
-    )
-    # permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly | IsAdminOrReadOnly,)
-    permission_classes = (IsAuthenticatedOrReadOnly,) # 16 errors
-    # permission_classes = (IsAuthenticated,)
-    # 17 errors
-    # permission_classes = (IsAuthorOrAdminOrIsAuthReadOnly,)
+    queryset = Recipe.objects.all()
+    permission_classes = [IsAuthenticated]
     pagination_class = PaginationCust
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
@@ -70,11 +63,6 @@ class RecipeViewSet(ModelViewSet):
         """Выбор сериализатора в зависимости от действия."""
         return (RecipeReadSerializer if self.request.method in SAFE_METHODS
                 else RecipeRecordSerializer)
-    
-        # if self.action in SAFE_METHODS:
-        #     return RecipeReadSerializer
-        # return RecipeRecordSerializer
-    
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -106,8 +94,6 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post'],
-        serializer_class=FavoritesListSerializer,
-        permission_classes=[IsAuthorPermission]
     )
     def favorite(self, request, pk):
         """Добавление рецептов в раздел Избранное."""
@@ -121,11 +107,10 @@ class RecipeViewSet(ModelViewSet):
         #                     data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(Favorite, request.user, pk)
 
+
     @action(
         detail=True,
         methods=['post'],
-        serializer_class=ShoppingCartSerializer,
-        permission_classes=[IsAuthorPermission]
     )
     def shopping_сart(self, request,  pk):
         """Добавление рецептов в раздел Корзина покупок."""
@@ -139,22 +124,23 @@ class RecipeViewSet(ModelViewSet):
         #                 data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(ShoppingCart, request.user, pk)
 
+    
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов. Различные проверки."""
-        # if not Recipe.objects.filter(id=pk).exists():
-        #     return Response({'Ошибка': 'Такого рецепта не существует!'},
-        #                 status=status.HTTP_400_BAD_REQUEST)
+        if not Recipe.objects.filter(id=pk).exists():
+            return Response({'Ошибка': 'Такого рецепта не существует!'},
+                        status=status.HTTP_400_BAD_REQUEST)
         try:
             recipe = get_object_or_404(Recipe, id=pk)
-            # if models.objects.filter(user=user, recipe=recipe).exists():
-            #     return Response({'Ошибка': 'Рецепт уже добавлен!'},
-            #                 status=status.HTTP_400_BAD_REQUEST)
+            if models.objects.filter(user=user, recipe=recipe).exists():
+                return Response({'Ошибка': 'Рецепт уже добавлен!'},
+                            status=status.HTTP_400_BAD_REQUEST)
             models.objects.create(user=user, recipe=recipe)
             serializer = ShortRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except IntegrityError:
             return Response(status=status.HTTP_400_BAD_REQUEST, 
-                            data={'detail': 'Рецепт уже добавлен!'})
+                        data={'detail': 'Рецепт уже добавлен!'})
 
     def delete_recipe(self, models, user, pk):
         """Метод удаления рецепта."""
@@ -164,12 +150,13 @@ class RecipeViewSet(ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except models.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND, 
-                            data={'detail': 'Not found.'})
+                        data={'detail': 'Not found.'})
+
 
     @action(
         detail=False,
-        methods=('get',),
-        permission_classes=[IsAuthorPermission],
+        methods=['get'],
+        permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
         """Получение списка покупок у текущего пользователя из базы данных.
