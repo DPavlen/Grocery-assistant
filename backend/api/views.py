@@ -4,10 +4,12 @@ from django.forms import ValidationError
 from django.http import Http404, HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
-#
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from tkinter import Canvas
 from django.db.models import Sum
+from requests import request
 #
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
@@ -20,13 +22,13 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from api.filters import FilterIngredient, FilterRecipe
 from api.pagination import PaginationCust
 from api.permissions import (IsAdminOrReadOnly, 
-                             IsAuthorOrAdminOrIsAuthReadOnly, IsAuthorPermission)
+                             IsAuthorOrAdminOrIsAuthReadOnly)
 from api.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeRecordSerializer,
                              ShortRecipeSerializer)
-from core.utils import create_shopping_list_report
+# from core 
 from recipes.models import (
-    Ingredient, Tag, Recipe, Favorite, ShoppingCart, CompositionOfDish)
+    CompositionOfDish, Ingredient, Tag, Recipe, Favorite, ShoppingCart)
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -153,25 +155,57 @@ class RecipeViewSet(ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND, 
                         data={'detail': 'Not found.'})
 
-
     @action(
         detail=False,
         methods=['get'],
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        """Получение списка покупок у текущего пользователя из базы данных.
-        Использует этот буфер для создания 
+        """Получение списка покупок у текущего пользователя из 
+        базы данных. Использует этот буфер для создания 
         HTTP-ответа с прикрепленным PDF-файлом."""
-
         shopping_cart = ShoppingCart.objects.filter(user=request.user)
-        buy_list_text = create_shopping_list_report(shopping_cart)
+        pdf_filename = 'shopping_cart.pdf'
+        buffer = io.BytesIO()
+        pdfmetrics.registerFont(TTFont('DejaVuSans','DejaVuSans.ttf'))
+    
+        pdf = canvas.Canvas(buffer)
+        y = 800
+        recipes = shopping_cart.values_list('recipe_id', flat=True)
+        buy_list = CompositionOfDish.objects.filter(
+            recipe__in=recipes
+        ).values(
+            'ingredient'
+            # 'ingredient__name',
+            # 'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
+
+        buy_list_text = f'Foodgram - Список покупок: \n'
+        for item in buy_list:
+            ingredient = Ingredient.objects.get(pk=item['ingredient'])
+            # ingredient = Ingredient.objects.get(pk=item['ingredient'])
+            amount = item['amount']
+            buy_list_text += (
+                f'{ingredient.name}, {amount} '
+                f'{ingredient.measurement_unit} \n'
+        )
+        # Загрузка шрифта
+        pdf.setFont("DejaVuSans", 14)
+        # Разделение текста на строки с автоматическим переносом
+        lines = buy_list_text.split('\n')
+        for line in lines:
+            line = line.strip()
+            pdf.drawString(100, y, line)
+            y -= 20
+
+        y -= 20
+        pdf.showPage()
+        pdf.save()
+        buffer.seek(0)
         # Создание HttpResponse с содержимым буфера
         response = HttpResponse(
-            buy_list_text,
+            buffer.getvalue(),
             content_type='application/pdf'
         )
-        pdf_filename = 'shopping_cart.pdf'
         response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
         return response
- 
