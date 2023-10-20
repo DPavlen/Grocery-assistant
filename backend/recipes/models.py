@@ -27,7 +27,8 @@ class Ingredient(models.Model):
         ordering = ["name"]
         constraints = [
             UniqueConstraint(
-                fields=["name", "measurement_unit"], name="unique_measurement_unit"
+                fields=["name", "measurement_unit"],
+                name="unique_measurement_unit"
             )
         ]
 
@@ -152,7 +153,9 @@ class CompositionOfDish(models.Model):
         verbose_name="Рецепты",
     )
     ingredient = models.ForeignKey(
-        Ingredient, on_delete=models.CASCADE, verbose_name="Ингредиенты в рецепте"
+        Ingredient,
+        on_delete=models.CASCADE,
+        verbose_name="Ингредиенты в рецепте"
     )
     amount = models.SmallIntegerField(
         verbose_name="Количество ингредиентов",

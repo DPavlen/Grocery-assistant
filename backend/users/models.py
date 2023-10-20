@@ -106,7 +106,11 @@ class Subscriptions(models.Model):
             CheckConstraint(
                 check=~Q(user=F("author")), name="not subscribe to yourself! "
             ),
-            UniqueConstraint(fields=["user", "author"], name="unique_subscription"),
+            UniqueConstraint(
+                fields=[
+                    "user",
+                    "author"],
+                name="unique_subscription"),
         ]
 
     def __str__(self):

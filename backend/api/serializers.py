@@ -186,35 +186,41 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Дополнительные проверки наличия и количества
-        ингредиентов и тегов в рецепте(уникальность, наличие и прочее.)."""
+        ингредиентов и тегов в рецепте
+        (уникальность, наличие и прочее.)."""
 
         # Проверка на наличие тегов.
         tags = data.get("tags", [])
         if not tags:
-            raise serializers.ValidationError({"tags": "Укажите хотя бы один тег."})
+            raise serializers.ValidationError(
+                {"tags": "Укажите хотя бы один тег."})
 
         # Проверка на наличие ингредиентов в рецепте.
         ingredients = data.get("ingredients", [])
         if not ingredients:
             raise serializers.ValidationError(
-                {"ingredients": "Укажите хотя бы один ингредиент."}
+                {"ingredients":
+                 "Укажите хотя бы один ингредиент."}
             )
 
         # Проверка на уникальность тегов.
         tag_ids = [tag.id for tag in tags]
         if len(tag_ids) != len(set(tag_ids)):
-            raise serializers.ValidationError({"tags": "Теги не могут дублироваться."})
+            raise serializers.ValidationError(
+                {"tags": "Теги не могут дублироваться."})
 
         # Проверка на уникальность ингредиентов в рецепте.
         ingredient_ids = [ingredient["id"] for ingredient in ingredients]
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise serializers.ValidationError(
-                {"ingredients": "Ингредиенты не могут дублироваться."}
+                {"ingredients":
+                 "Ингредиенты не могут дублироваться."}
             )
 
         # Дополнительная проверка ингредиентов на минимальное количество.
         if len(ingredients) < 1:
-            raise ValidationError({"ingredients": f"Нужен минимум " f"{1} ингредиент!"})
+            raise ValidationError(
+                {"ingredients": f"Нужен минимум " f"{1} ингредиент!"})
 
         # Проверка на пустое поле тегов в рецепте.
         if not data.get("tags"):
@@ -225,7 +231,8 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         # Проверка на пустое поле ингредиентов в рецепте.
         if not data.get("ingredients"):
             raise serializers.ValidationError(
-                {"ingredients": "Поле ингредиентов не может быть пустым."}
+                {"ingredients":
+                 "Поле ингредиентов не может быть пустым."}
             )
 
         return data
@@ -265,7 +272,8 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         # Проверка что мы будем создавать рецепт с ингредиентом
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.create_composition_of_dish(recipe=recipe, ingredients=ingredients)
+        self.create_composition_of_dish(
+            recipe=recipe, ingredients=ingredients)
         return recipe
 
     def update(self, instance, validated_data):
@@ -286,7 +294,8 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
                 )
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_composition_of_dish(recipe=instance, ingredients=ingredients)
+        self.create_composition_of_dish(
+            recipe=instance, ingredients=ingredients)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
@@ -294,7 +303,8 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         из списка словарей, в Рецепте."""
         request = self.context.get("request")
         context = {"request": request}
-        return RecipeReadSerializer(instance, context=context).data
+        return RecipeReadSerializer(
+            instance, context=context).data
 
     def validate_image(self, image):
         if not image:
@@ -303,13 +313,14 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
 
     def validate_ingredients(self, ingredients):
         if not ingredients:
-            raise ValidationError({"ingredients": "Необходим миниму 1 ингердиент!"})
+            raise ValidationError(
+                {"ingredients": "Необходим миниму 1 ингердиент!"})
         return ingredients
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор короткого рецепта.
-    image позволяет передавать изображения в виде base64-строки по API."""
+    """Сериализатор короткого рецепта. Image позволяет
+    передавать изображения в виде base64-строки по API."""
 
     image = Base64ImageField()
 
@@ -321,49 +332,3 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
             "image",
             "cooking_time",
         )
-
-
-# class ShoppingCartSerializer(serializers.Serializer):
-#     """Добавление и удаление рецептов из корзины покупок."""
-
-#     def validate(self, data):
-#         recipe_id = self.context['recipe_id']
-#         user = self.context['request'].user
-#         if ShoppingCart.objects.filter(
-#             user=user, recipe_id=recipe_id
-#         ).exists():
-#             raise serializers.ValidationError(
-#                 'Этот рецепт уже есть в списке покупок'
-#             )
-#         return data
-
-#     def create(self, validated_data):
-#         recipe = get_object_or_404(Recipe, pk=validated_data['id'])
-#         ShoppingCart.objects.create(
-#             user=self.context['request'].user,
-#             recipe=recipe
-#         )
-#         serializer = ShortRecipeSerializer
-#         return serializer.data
-
-
-# class FavoritesListSerializer(serializers.Serializer):
-#     """Сериализатор для добавления рецепта в избранное."""
-
-#     def validate(self, data):
-#         recipe_id = self.context['recipe_id']
-#         user = self.context['request'].user
-#         if Favorite.objects.filter(
-#             user=user, recipe_id=recipe_id
-#         ).exists():
-#             raise serializers.ValidationError(
-#                 'Этот рецепт уже есть в избранном'
-#             )
-#         return data
-
-#     def create(self, validated_data):
-#         recipe = get_object_or_404(Recipe, pk=validated_data['id'])
-#         user = self.context['request'].user
-#         Favorite.objects.create(user=user, recipe=recipe)
-#         serializer = ShortRecipeSerializer(recipe)
-#         return serializer.data

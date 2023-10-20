@@ -51,7 +51,7 @@ class CustomUserViewSet(UserViewSet):
                 author=get_object_or_404(User, id=self.kwargs.get("id")),
             )
             subscription.delete()
-            return Response("Подписка удалена", 
+            return Response("Подписка удалена",
                             status=status.HTTP_204_NO_CONTENT)
         except ObjectDoesNotExist:
             return Response(
@@ -82,6 +82,6 @@ class CustomUserViewSet(UserViewSet):
         """Просмотр подписок на авторов.Мои подписки."""
 
         user = request.user
-        serializer = MyUserSerializer(user, 
+        serializer = MyUserSerializer(user,
                                       context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)

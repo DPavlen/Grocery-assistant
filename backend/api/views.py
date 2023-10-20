@@ -7,8 +7,6 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from django.db.models import Sum
-
-#
 from rest_framework.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.decorators import action
@@ -106,7 +104,8 @@ class RecipeViewSet(ModelViewSet):
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=["post"],
+            permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
         """Добавление рецептов в раздел Избранное."""
 
@@ -116,12 +115,10 @@ class RecipeViewSet(ModelViewSet):
     def delete_favorite(self, request, pk):
         """Удаление рецептов из раздела Избранное."""
 
-        # if not request.user.is_authenticated:
-        #     return Response(status=status.HTTP_401_UNAUTHORIZED,
-        #                     data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(Favorite, request.user, pk)
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=["post"],
+            permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
         """Добавление рецептов в раздел Корзина покупок."""
 
@@ -131,9 +128,6 @@ class RecipeViewSet(ModelViewSet):
     def delete_shopping_сart(self, request, pk):
         """Удаление рецептов в раздел Корзина покупок."""
 
-        # if not request.user.is_authenticated:
-        #     return Response(status=status.HTTP_401_UNAUTHORIZED,
-        #                 data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(ShoppingCart, request.user, pk)
 
     def add_recipe(self, models, user, pk):
@@ -146,14 +140,16 @@ class RecipeViewSet(ModelViewSet):
             )
         try:
             recipe = get_object_or_404(Recipe, id=pk)
-            if models.objects.filter(user=user, recipe=recipe).exists():
+            if models.objects.filter(user=user,
+                                     recipe=recipe).exists():
                 return Response(
                     {"Ошибка": "Рецепт уже добавлен!"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             models.objects.create(user=user, recipe=recipe)
             serializer = ShortRecipeSerializer(recipe)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data,
+                            status=status.HTTP_201_CREATED)
         except IntegrityError:
             return Response(
                 status=status.HTTP_400_BAD_REQUEST,
@@ -164,30 +160,31 @@ class RecipeViewSet(ModelViewSet):
         """Метод удаления рецепта."""
 
         try:
-            obj = get_object_or_404(models, user=user, recipe__id=pk)
+            obj = get_object_or_404(
+                models, user=user,
+                recipe__id=pk)
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except models.DoesNotExist:
             return Response(
-                status=status.HTTP_404_NOT_FOUND, data={"detail": "Not found."}
+                status=status.HTTP_404_NOT_FOUND,
+                data={"detail": "Not found."}
             )
 
-    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=["get"],
+            permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         """Получение списка покупок у текущего пользователя из
         базы данных. Использует этот буфер для создания
         HTTP-ответа с прикрепленным PDF-файлом."""
 
-        # shopping_cart = ShoppingCart.objects.filter(user=request.user)
         pdf_filename = "shopping_cart.pdf"
         buffer = io.BytesIO()
         pdfmetrics.registerFont(TTFont("DejaVuSans", "DejaVuSans.ttf"))
 
         pdf = canvas.Canvas(buffer)
         y = 800
-        # recipes = shopping_cart.values_list('recipe_id', flat=True)
         recipes = Recipe.objects.filter(shoppingcart__user=request.user)
-        # print(recipes)
         buy_list = (
             CompositionOfDish.objects.filter(recipe__in=recipes)
             .values("ingredient__name", "ingredient__measurement_unit")
@@ -201,8 +198,6 @@ class RecipeViewSet(ModelViewSet):
             "ingredient__measurement_unit",
             "total_amount",
         ):
-            # ingredient = Ingredient.objects.get(pk=item['ingredient'])
-            # ingredient = Ingredient.objects.get(pk=item['ingredient'])
             amount = item["total_amount"]
             name = item["ingredient__name"]
             measurement_unit = item["ingredient__measurement_unit"]
@@ -222,6 +217,7 @@ class RecipeViewSet(ModelViewSet):
         pdf.save()
         buffer.seek(0)
         # Создание HttpResponse с содержимым буфера
-        response = HttpResponse(buffer.getvalue(), content_type="application/pdf")
+        response = HttpResponse(buffer.getvalue(),
+                                content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
         return response

@@ -14,7 +14,14 @@ class BaseAdminSettings(admin.ModelAdmin):
 class UsersAdmin(BaseAdminSettings):
     """Настроенная панель админки (управление пользователями)."""
 
-    list_display = ("id", "role", "username", "email", "first_name", "last_name")
+    list_display = (
+        "id",
+        "role",
+        "username",
+        "email",
+        "first_name",
+        "last_name"
+    )
     list_display_links = ("id", "username")
     search_fields = ("username", "role")
 
