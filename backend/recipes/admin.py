@@ -25,6 +25,7 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("id", "name", "color")
 
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Рецептов."""
