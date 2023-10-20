@@ -67,7 +67,7 @@ WSGI_APPLICATION = "foodgram.wsgi.application"
 
 DATABASES = {
     "default": {
-        # Меняем настройку Django: теперь для работы будет использоватьс
+        # Меняем настройку Django: теперь для работы будет использовать
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("POSTGRES_DB", "django"),
         "USER": os.getenv("POSTGRES_USER", "django"),
