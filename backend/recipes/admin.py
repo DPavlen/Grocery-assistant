@@ -30,10 +30,6 @@ class TagAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Рецептов."""
 
-    # inlines = [
-    #     CompositionOfDish,
-    #     TagRecipeInline,
-    # ]
     list_display = (
         "id",
         "author",
