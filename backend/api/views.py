@@ -66,8 +66,6 @@ class RecipeViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterRecipe
 
-    # def perform_create(self, serializer, **kwargs):
-    #     serializer.save(author=self.request.user)
     def get_serializer_class(self):
         """Выбор сериализатора в зависимости от действия."""
 
