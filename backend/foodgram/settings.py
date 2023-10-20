@@ -7,16 +7,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# SECRET_KEY = ('django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
-# SECRET_KEY = os.getenv('SECRET_KEY',
-#                        'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt')
+
 SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# DEBUG = 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
 
 # ALLOWED_HOSTS = [
@@ -77,33 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         # 'NAME': '/data/db.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# } 
-# POSTGRES_USER=django_user
-# POSTGRES_PASSWORD=mysecretpassword
-# POSTGRES_DB=django
-# # Добавляем переменные для Django-проекта:
-# DB_HOST=db
-# DB_PORT=5432
-# # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-i!awxfiu8j9^n*j&rtd(z!ne^)tvoqn0u8*oyf4^6+y(pzn7jt'
-
 
 # DATABASES = {
 #     'default': {
