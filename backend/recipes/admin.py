@@ -25,21 +25,6 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("id", "name", "color")
 
-
-# class CompositionOfDish(admin.TabularInline):
-#     """Отображение состава блюда в виде таблицы.
-#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
-#     model = Recipe.ingredients.through
-#     min_num = 1
-
-
-# class TagRecipeInline(admin.TabularInline):
-#     """Отображение тегов в виде таблицы.
-#     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
-#     model = Recipe.tags.through
-#     min_num = 1
-
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Настроенная админ-панель Рецептов."""
