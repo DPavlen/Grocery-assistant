@@ -4,15 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recipes', '0002_initial'),
+        ("recipes", "0002_initial"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='tag',
+            model_name="tag",
             constraint=models.UniqueConstraint(
-                fields=('name', 'slug'), name='unique_slug_in_name'),
+                fields=("name", "slug"), name="unique_slug_in_name"
+            ),
         ),
     ]

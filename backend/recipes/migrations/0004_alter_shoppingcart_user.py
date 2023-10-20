@@ -6,20 +6,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('recipes', '0003_tag_unique_slug_in_name'),
+        ("recipes", "0003_tag_unique_slug_in_name"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='shoppingcart',
-            name='user',
+            model_name="shoppingcart",
+            name="user",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name='shoppingcart',
+                related_name="shoppingcart",
                 to=settings.AUTH_USER_MODEL,
-                verbose_name='Пользователь'),
+                verbose_name="Пользователь",
+            ),
         ),
     ]

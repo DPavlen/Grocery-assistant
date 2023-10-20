@@ -20,3 +20,5 @@ djoser==2.2.0
 drf-extra-fields==3.7.0
 reportlab==4.0.5
 load_dotenv==0.1.0
+flake8==6.0.0
+black==23.9.1
