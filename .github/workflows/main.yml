@@ -140,11 +140,9 @@ jobs:
             echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
 
             sudo docker compose -f docker-compose.production.yml up -d
-# sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --noinput
             sudo systemctl restart nginx
-# sudo systemctl status nginx.service и journalctl -xeu nginx.service
 
             
 
