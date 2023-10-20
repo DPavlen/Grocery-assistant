@@ -119,7 +119,6 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 class CompositionOfDish(admin.TabularInline):
     """Отображение состава блюда в виде таблицы.
     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
-    
     model = CompositionOfDish
     extra = 1
     min_num = 1
