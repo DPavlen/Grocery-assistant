@@ -112,7 +112,13 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
 
         request = self.context.get("request")
         limit = request.GET.get("recipes_limit")
-        recipes = author.recipes.all()[: int(limit)] if limit else author.recipes.all()
+        recipes = (
+            author.recipes.all()[: int(limit)]
+            if limit
+            else author.recipes.all()
+        )
+        # recipes = author.recipes.all()
+        # [: int(limit)] if limit else author.recipes.all()
         serializer = ShortRecipeSerializer(recipes, many=True, read_only=True)
         return serializer.data
 
@@ -121,9 +127,10 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         Проверка на подписку самого себя."""
 
         author = self.instance
-        user = self.context.get("request").user
+        user = self.context.get('request').user
         if Subscriptions.objects.filter(author=author, user=user).exists():
-            raise ValidationError("Вы уже подписаны на этого пользователя себя!")
+            raise ValidationError('Вы уже подписаны на этого пользователя!')
         if user == author:
-            raise serializers.ValidationError("Нельзя подписаться на самого себя!")
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя!')
         return data

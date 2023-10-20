@@ -27,7 +27,8 @@ class CustomUserViewSet(UserViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PaginationCust
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=["post"],
+            permission_classes=[IsAuthenticated])
     def subscribe(self, request, **kwargs):
         """Подписка на автора рецептов."""
 
@@ -50,7 +51,8 @@ class CustomUserViewSet(UserViewSet):
                 author=get_object_or_404(User, id=self.kwargs.get("id")),
             )
             subscription.delete()
-            return Response("Подписка удалена", status=status.HTTP_204_NO_CONTENT)
+            return Response("Подписка удалена", 
+                            status=status.HTTP_204_NO_CONTENT)
         except ObjectDoesNotExist:
             return Response(
                 "Подписка не существует", status=status.HTTP_400_BAD_REQUEST
@@ -80,5 +82,6 @@ class CustomUserViewSet(UserViewSet):
         """Просмотр подписок на авторов.Мои подписки."""
 
         user = request.user
-        serializer = MyUserSerializer(user, context={"request": request})
+        serializer = MyUserSerializer(user, 
+                                      context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
