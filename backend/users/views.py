@@ -44,14 +44,6 @@ class CustomUserViewSet(UserViewSet):
     def delete_subscribe(self, request, **kwargs):
         """Отписка от автора рецептов."""
 
-        # subscription = get_object_or_404(
-        #     Subscriptions,
-        #     user=request.user,
-        #     author=get_object_or_404(User, id=self.kwargs.get('id'))
-        # )
-        # subscription.delete()
-        # return Response('Подписка удалена',
-        # status=status.HTTP_204_NO_CONTENT)
         try:
             subscription = Subscriptions.objects.get(
                 user=request.user,
