@@ -51,17 +51,17 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
     cooking_time = serializers.IntegerField(
-            validators=[
-                MinValueValidator(
-                    LenghtField.MIN_COOKING_TIME.value,
-                    message=f'Время приготовления блюда должно быть '
-                            f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
-                MaxValueValidator(
-                    LenghtField.MAX_COOKING_TIME.value,
-                    message=f'Время приготовления блюда не превышает '
-                            f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
-            ]
-        )
+        validators=[
+            MinValueValidator(
+                LenghtField.MIN_COOKING_TIME.value,
+                message=f'Время приготовления блюда должно быть '
+                f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
+            MaxValueValidator(
+                LenghtField.MAX_COOKING_TIME.value,
+                message=f'Время приготовления блюда не превышает '
+                f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
+        ]
+    )
 
     class Meta:
         model = Recipe
@@ -127,7 +127,7 @@ class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'amount',
-            # 'measurement_unit', 
+            # 'measurement_unit',
             # 'amount'
         )
 
@@ -145,17 +145,17 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
     ingredients = CompositionOfDishRecordSerializer(many=True)
     image = Base64ImageField()
     cooking_time = serializers.IntegerField(
-            validators=[
-                MinValueValidator(
-                    LenghtField.MIN_COOKING_TIME.value,
-                    message=f'Время приготовления блюда должно быть '
-                            f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
-                MaxValueValidator(
-                    LenghtField.MAX_COOKING_TIME.value,
-                    message=f'Время приготовления блюда не превышает '
-                            f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
-            ]
-        )
+        validators=[
+            MinValueValidator(
+                LenghtField.MIN_COOKING_TIME.value,
+                message=f'Время приготовления блюда должно быть '
+                f'не менее {LenghtField.MIN_COOKING_TIME.value} минуты.'),
+            MaxValueValidator(
+                LenghtField.MAX_COOKING_TIME.value,
+                message=f'Время приготовления блюда не превышает '
+                f'более {LenghtField.MAX_COOKING_TIME.value} минут.'),
+        ]
+    )
 
     class Meta:
         model = Recipe
@@ -173,7 +173,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Дополнительные проверки наличия и количества
         ингредиентов и тегов в рецепте(уникальность, наличие и прочее.)."""
-        
+
         # Проверка на наличие тегов.
         tags = data.get('tags', [])
         if not tags:
@@ -203,7 +203,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
             raise ValidationError(
                 {"ingredients": f"Нужен минимум "
                                 f"{1} ингредиент!"})
-        
+
         # Проверка на пустое поле тегов в рецепте.
         if not data.get('tags'):
             raise serializers.ValidationError(
@@ -213,7 +213,7 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         if not data.get('ingredients'):
             raise serializers.ValidationError(
                 {'ingredients': 'Поле ингредиентов не может быть пустым.'})
-        
+
         return data
 
     def create_composition_of_dish(self, ingredients, recipe):

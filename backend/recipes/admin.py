@@ -21,14 +21,14 @@ class TagAdmin(admin.ModelAdmin):
 
 
 # class CompositionOfDish(admin.TabularInline):
-#     """Отображение состава блюда в виде таблицы. 
+#     """Отображение состава блюда в виде таблицы.
 #     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
 #     model = Recipe.ingredients.through
 #     min_num = 1
 
 
 # class TagRecipeInline(admin.TabularInline):
-#     """Отображение тегов в виде таблицы. 
+#     """Отображение тегов в виде таблицы.
 #     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
 #     model = Recipe.tags.through
 #     min_num = 1
@@ -112,7 +112,7 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 
 
 class CompositionOfDish(admin.TabularInline):
-    """Отображение состава блюда в виде таблицы. 
+    """Отображение состава блюда в виде таблицы.
     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
     # model = Recipe.ingredients.through
     model = CompositionOfDish
@@ -121,7 +121,7 @@ class CompositionOfDish(admin.TabularInline):
 
 
 class TagRecipeInline(admin.TabularInline):
-    """Отображение тегов в виде таблицы. 
+    """Отображение тегов в виде таблицы.
     Промежуточная моделт Рецепты, минимум с 1-й строкой."""
     model = Recipe.tags.through
     min_num = 1

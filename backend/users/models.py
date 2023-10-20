@@ -69,9 +69,9 @@ class Subscriptions(models.Model):
     """Подписки пользователей на друг друга.
     author(int): Автор рецепта. Связь через ForeignKey.
     user(int): Подписчик. Cвязь через ForeignKey.
-    date_sub(datetime): Дата подписки. 
+    date_sub(datetime): Дата подписки.
     Ограничение, что уникальности логинов атора и юзера.
-    Ограничение, что подписчик и автор не могут быть одинаковые. 
+    Ограничение, что подписчик и автор не могут быть одинаковые.
     """
 
     author = models.ForeignKey(
@@ -103,7 +103,7 @@ class Subscriptions(models.Model):
             ),
             UniqueConstraint(fields=['user', 'author'],
                              name='unique_subscription'),
-            
+
         ]
 
     def __str__(self):

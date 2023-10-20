@@ -58,7 +58,7 @@ class FilterUser(FilterSet):
 #         """Фильтрует Recipe по тому, является ли конкретный
 #         рецепт избранным для определенного пользователя,
 #         на основе переданных значений value"""
-    
+
 #         if value and self.request.user.is_authenticated:
 #             return queryset.filter(favorites__user=self.request.user)
 #         return queryset
@@ -72,7 +72,7 @@ class FilterUser(FilterSet):
 #             return queryset.filter(shoppingcart__user=self.request.user)
 #         return queryset
 
-    
+
 class FilterRecipe(FilterSet):
     """Фильтрация рецептов по тегам. Множественный выбор моделей Tag."""
     is_favorited = NumberFilter(

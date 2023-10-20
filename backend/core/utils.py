@@ -39,18 +39,15 @@
 
 #     # Рисование строки с использованием шрифта Arial
 #     pdf.setFont('Arial', 14)
-    
+
 #     # Разделение текста на строки с автоматическим переносом
 #     lines = buy_list_text.split('\n')
 #     for line in lines:
 #         pdf.drawString(100, y, line)
 #         y -= 20
-    
+
 #     y -= 20
 #     pdf.showPage()
 #     pdf.save()
 #     buffer.seek(0)
 #     return buffer.getvalue()
-
-
-

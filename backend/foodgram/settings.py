@@ -11,7 +11,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 
-
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(' ')
@@ -84,8 +83,6 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 #         'PORT': '5432'
 #     }
 # }
-
-
 
 
 # Этими строчками замените текущую настройку DATABASES
@@ -182,15 +179,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-            },
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
         },
-        'root': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-    }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

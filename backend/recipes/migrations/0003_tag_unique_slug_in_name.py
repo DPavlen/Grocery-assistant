@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddConstraint(
             model_name='tag',
-            constraint=models.UniqueConstraint(fields=('name', 'slug'), name='unique_slug_in_name'),
+            constraint=models.UniqueConstraint(
+                fields=('name', 'slug'), name='unique_slug_in_name'),
         ),
     ]

@@ -55,16 +55,19 @@ class CustomUserViewSet(UserViewSet):
         #     author=get_object_or_404(User, id=self.kwargs.get('id'))
         # )
         # subscription.delete()
-        # return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
+        # return Response('Подписка удалена',
+        # status=status.HTTP_204_NO_CONTENT)
         try:
             subscription = Subscriptions.objects.get(
                 user=request.user,
                 author=get_object_or_404(User, id=self.kwargs.get('id'))
-        )
+            )
             subscription.delete()
-            return Response('Подписка удалена', status=status.HTTP_204_NO_CONTENT)
+            return Response('Подписка удалена',
+                            status=status.HTTP_204_NO_CONTENT)
         except ObjectDoesNotExist:
-            return Response('Подписка не существует', status=status.HTTP_400_BAD_REQUEST)
+            return Response('Подписка не существует',
+                            status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,

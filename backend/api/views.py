@@ -21,12 +21,12 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.filters import FilterIngredient, FilterRecipe
 from api.pagination import PaginationCust
-from api.permissions import (IsAdminOrReadOnly, 
+from api.permissions import (IsAdminOrReadOnly,
                              IsAuthorOrAdminOrIsAuthReadOnly)
 from api.serializers import (TagSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeRecordSerializer,
                              ShortRecipeSerializer)
-# from core 
+# from core
 from recipes.models import (
     CompositionOfDish, Ingredient, Tag, Recipe, Favorite, ShoppingCart)
 
@@ -68,21 +68,20 @@ class RecipeViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
- 
+
     def partial_update(self, request, *args, **kwargs):
-        """Обертка над методом update и для частичного обновления данных. 
-        В данном случае, параметр partial устанавливается в False, 
-        чтобы гарантировать, что обновление будет полным (не частичным). 
+        """Обертка над методом update и для частичного обновления данных.
+        В данном случае, параметр partial устанавливается в False,
+        чтобы гарантировать, что обновление будет полным (не частичным).
         Затем метод update вызывается с переданными аргументами."""
         instance = self.get_object()
         if instance.author != request.user:
             raise PermissionDenied('Вы не можете обновить чужой рецепт')
         kwargs['partial'] = False
         return self.update(request, *args, **kwargs)
-    
+
     def destroy(self, request, *args, **kwargs):
         """Проверяем, является ли пользователь автором рецепта.
         И если нет, то не даем удалять чужой рецепт."""
@@ -100,7 +99,7 @@ class RecipeViewSet(ModelViewSet):
     def favorite(self, request, pk):
         """Добавление рецептов в раздел Избранное."""
         return self.add_recipe(Favorite, request.user, pk)
-       
+
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         """Удаление рецептов из раздела Избранное."""
@@ -108,7 +107,6 @@ class RecipeViewSet(ModelViewSet):
         #     return Response(status=status.HTTP_401_UNAUTHORIZED,
         #                     data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(Favorite, request.user, pk)
-
 
     @action(
         detail=True,
@@ -119,7 +117,7 @@ class RecipeViewSet(ModelViewSet):
         """Добавление рецептов в раздел Корзина покупок."""
         return self.add_recipe(ShoppingCart, request.user, pk)
 
-    @shopping_cart.mapping.delete 
+    @shopping_cart.mapping.delete
     def delete_shopping_сart(self, request, pk):
         """Удаление рецептов в раздел Корзина покупок."""
         # if not request.user.is_authenticated:
@@ -127,23 +125,22 @@ class RecipeViewSet(ModelViewSet):
         #                 data={'detail': 'User is not authenticated.'})
         return self.delete_recipe(ShoppingCart, request.user, pk)
 
-    
     def add_recipe(self, models, user, pk):
         """Метод добавления рецептов. Различные проверки."""
         if not Recipe.objects.filter(id=pk).exists():
             return Response({'Ошибка': 'Такого рецепта не существует!'},
-                        status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
         try:
             recipe = get_object_or_404(Recipe, id=pk)
             if models.objects.filter(user=user, recipe=recipe).exists():
                 return Response({'Ошибка': 'Рецепт уже добавлен!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_400_BAD_REQUEST)
             models.objects.create(user=user, recipe=recipe)
             serializer = ShortRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except IntegrityError:
-            return Response(status=status.HTTP_400_BAD_REQUEST, 
-                        data={'detail': 'Рецепт уже добавлен!'})
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={'detail': 'Рецепт уже добавлен!'})
 
     def delete_recipe(self, models, user, pk):
         """Метод удаления рецепта."""
@@ -152,8 +149,8 @@ class RecipeViewSet(ModelViewSet):
             obj.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except models.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND, 
-                        data={'detail': 'Not found.'})
+            return Response(status=status.HTTP_404_NOT_FOUND,
+                            data={'detail': 'Not found.'})
 
     @action(
         detail=False,
@@ -161,14 +158,14 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        """Получение списка покупок у текущего пользователя из 
-        базы данных. Использует этот буфер для создания 
+        """Получение списка покупок у текущего пользователя из
+        базы данных. Использует этот буфер для создания
         HTTP-ответа с прикрепленным PDF-файлом."""
         # shopping_cart = ShoppingCart.objects.filter(user=request.user)
         pdf_filename = 'shopping_cart.pdf'
         buffer = io.BytesIO()
-        pdfmetrics.registerFont(TTFont('DejaVuSans','DejaVuSans.ttf'))
-    
+        pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
+
         pdf = canvas.Canvas(buffer)
         y = 800
         # recipes = shopping_cart.values_list('recipe_id', flat=True)
@@ -186,7 +183,7 @@ class RecipeViewSet(ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit',
             'total_amount',
-            ):
+        ):
             # ingredient = Ingredient.objects.get(pk=item['ingredient'])
             # ingredient = Ingredient.objects.get(pk=item['ingredient'])
             amount = item['total_amount']
@@ -195,7 +192,7 @@ class RecipeViewSet(ModelViewSet):
             buy_list_text += (
                 f'{name}, {amount} '
                 f'{measurement_unit} \n'
-        )
+            )
         # Загрузка шрифта
         pdf.setFont("DejaVuSans", 14)
         print(buy_list_text)
