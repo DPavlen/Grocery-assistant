@@ -201,7 +201,8 @@ class RecipeViewSet(ModelViewSet):
             amount = item["total_amount"]
             name = item["ingredient__name"]
             measurement_unit = item["ingredient__measurement_unit"]
-            buy_list_text += f"{name}, {amount} " f"{measurement_unit} \n"
+            buy_list_text += f"{name}, {amount} {measurement_unit} \n"
+
         # Загрузка шрифта
         pdf.setFont("DejaVuSans", 14)
         print(buy_list_text)
