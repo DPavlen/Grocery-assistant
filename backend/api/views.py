@@ -219,5 +219,10 @@ class RecipeViewSet(ModelViewSet):
         # Создание HttpResponse с содержимым буфера
         response = HttpResponse(buffer.getvalue(),
                                 content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
+        # response["Content-Disposition"] =
+        # f'attachment; filename="{pdf_filename}"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="'
+            f'{pdf_filename}"'
+        )
         return response
