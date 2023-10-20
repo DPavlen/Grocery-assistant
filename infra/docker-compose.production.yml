@@ -15,28 +15,29 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    build: ./backend/
+    image: dpavlen/foodgram_backend
+    depends_on:
+      - db
     env_file: .env
     volumes:
-      - static:/backend_static
-      - media:/app/media
+      - static:/app/static/
+      - media:/app/media/
 
   frontend:
-    build: ./frontend/
+    image: dpavlen/foodgram_frontend
     env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
-      - static:/frontend_static
+      - static:/app/result_build/
   gateway:
-    build: ./nginx/
+    image: dpavlen/foodgram_gateway
+    depends_on:
+      - backend
+      - frontend
     env_file: .env
     volumes:
-      - static:/static
-      - media:/app/media
+      - static:/app/static/
+      - media:/app/media/
 
     ports:
-      - '8000:80'
-      # - 9000:80
-
-
-## Volume for Compos
+      - "8500:80"

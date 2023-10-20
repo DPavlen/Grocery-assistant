@@ -164,33 +164,41 @@ class RecipeViewSet(ModelViewSet):
         """Получение списка покупок у текущего пользователя из 
         базы данных. Использует этот буфер для создания 
         HTTP-ответа с прикрепленным PDF-файлом."""
-        shopping_cart = ShoppingCart.objects.filter(user=request.user)
+        # shopping_cart = ShoppingCart.objects.filter(user=request.user)
         pdf_filename = 'shopping_cart.pdf'
         buffer = io.BytesIO()
         pdfmetrics.registerFont(TTFont('DejaVuSans','DejaVuSans.ttf'))
     
         pdf = canvas.Canvas(buffer)
         y = 800
-        recipes = shopping_cart.values_list('recipe_id', flat=True)
+        # recipes = shopping_cart.values_list('recipe_id', flat=True)
+        recipes = Recipe.objects.filter(shoppingcart__user=request.user)
+        # print(recipes)
         buy_list = CompositionOfDish.objects.filter(
             recipe__in=recipes
         ).values(
-            'ingredient'
-            # 'ingredient__name',
-            # 'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
-
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(total_amount=Sum('amount')).order_by('ingredient__name')
+        print(buy_list)
         buy_list_text = f'Foodgram - Список покупок: \n'
-        for item in buy_list:
-            ingredient = Ingredient.objects.get(pk=item['ingredient'])
+        for item in buy_list.values(
+            'ingredient__name',
+            'ingredient__measurement_unit',
+            'total_amount',
+            ):
             # ingredient = Ingredient.objects.get(pk=item['ingredient'])
-            amount = item['amount']
+            # ingredient = Ingredient.objects.get(pk=item['ingredient'])
+            amount = item['total_amount']
+            name = item['ingredient__name']
+            measurement_unit = item['ingredient__measurement_unit']
             buy_list_text += (
-                f'{ingredient.name}, {amount} '
-                f'{ingredient.measurement_unit} \n'
+                f'{name}, {amount} '
+                f'{measurement_unit} \n'
         )
         # Загрузка шрифта
         pdf.setFont("DejaVuSans", 14)
+        print(buy_list_text)
         # Разделение текста на строки с автоматическим переносом
         lines = buy_list_text.split('\n')
         for line in lines:
