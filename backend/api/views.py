@@ -201,10 +201,8 @@ class RecipeViewSet(ModelViewSet):
             measurement_unit = item["ingredient__measurement_unit"]
             buy_list_text += f"{name}, {amount} {measurement_unit} \n"
 
-        # Загрузка шрифта
         pdf.setFont("DejaVuSans", 14)
         print(buy_list_text)
-        # Разделение текста на строки с автоматическим переносом
         lines = buy_list_text.split("\n")
         for line in lines:
             line = line.strip()
@@ -215,11 +213,8 @@ class RecipeViewSet(ModelViewSet):
         pdf.showPage()
         pdf.save()
         buffer.seek(0)
-        # Создание HttpResponse с содержимым буфера
         response = HttpResponse(buffer.getvalue(),
                                 content_type="application/pdf")
-        # response["Content-Disposition"] =
-        # f'attachment; filename="{pdf_filename}"'
         response["Content-Disposition"] = (
             f'attachment; filename="'
             f'{pdf_filename}"'

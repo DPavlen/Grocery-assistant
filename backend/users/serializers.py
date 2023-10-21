@@ -66,7 +66,6 @@ class MyUserCreateSerializer(UserCreateSerializer):
             "last_name",
             "password",
         )
-        # extra_kwargs = {'password': {'write_only': True}}
 
 
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
@@ -74,7 +73,6 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
     Выводится текущий пользователь."""
 
     is_subscribed = SerializerMethodField(read_only=True)
-    # recipes = ShortRecipeSerializer(many=True, read_only=True)
     recipes_count = SerializerMethodField()
     recipes = SerializerMethodField()
 
@@ -117,8 +115,6 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
             if limit
             else author.recipes.all()
         )
-        # recipes = author.recipes.all()
-        # [: int(limit)] if limit else author.recipes.all()
         serializer = ShortRecipeSerializer(recipes, many=True, read_only=True)
         return serializer.data
 

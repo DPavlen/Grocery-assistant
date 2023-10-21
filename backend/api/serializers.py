@@ -84,8 +84,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             "image",
             "text",
             "cooking_time",
-            # 'is_favorited',
-            # 'is_in_shopping_cart',
         )
         read_only_fields = (
             "is_favorite",
@@ -122,22 +120,12 @@ class CompositionOfDishRecordSerializer(serializers.ModelSerializer):
     """Сериализатор для получения Сотава блюда."""
 
     id = IntegerField(write_only=True)
-    # id = serializers.PrimaryKeyRelatedField(
-    #     queryset=Ingredient.objects.all(),
-    #     source='ingredient',
-    # )
-    # amount = serializers.IntegerField(
-    #     max_value=LenghtField.MIN_INGREDIENT_VALUE,
-    #     min_value=LenghtField.MAX_INGREDIENT_VALUE
-    # )
 
     class Meta:
         model = CompositionOfDish
         fields = (
             "id",
             "amount",
-            # 'measurement_unit',
-            # 'amount'
         )
 
 
@@ -151,8 +139,6 @@ class RecipeRecordSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True,
     )
-    # Это User Josera
-    # author = UserSerializer(read_only=True)
     author = MyUserSerializer(read_only=True)
     ingredients = CompositionOfDishRecordSerializer(many=True)
     image = Base64ImageField()
