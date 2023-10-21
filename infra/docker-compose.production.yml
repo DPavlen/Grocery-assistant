@@ -40,4 +40,4 @@ services:
       - media:/app/media/
 
     ports:
-      - "8500:80"
+      - 8500:80
