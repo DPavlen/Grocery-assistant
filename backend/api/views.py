@@ -190,8 +190,7 @@ class RecipeViewSet(ModelViewSet):
             .annotate(total_amount=Sum("amount"))
             .order_by("ingredient__name")
         )
-        print(buy_list)
-        buy_list_text = f"Foodgram - Список покупок: \n"
+        buy_list_text = "Foodgram - Список покупок: \n"
         for item in buy_list.values(
             "ingredient__name",
             "ingredient__measurement_unit",
