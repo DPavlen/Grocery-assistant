@@ -4,8 +4,6 @@ from django.db.models import F, Q
 from django.db.models import CheckConstraint, UniqueConstraint
 
 from core.constants import LenghtField
-
-# from core.validators import validate_username
 from core.validators import (
     username_validator,
     first_name_validator,

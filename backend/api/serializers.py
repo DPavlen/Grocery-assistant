@@ -8,12 +8,12 @@ from drf_extra_fields.fields import Base64ImageField
 
 from core.constants import LenghtField
 from recipes.models import (
-    Ingredient,
-    Tag,
-    Recipe,
     CompositionOfDish,
-    ShoppingCart,
+    Ingredient,
     Favorite,
+    Recipe,
+    ShoppingCart,
+    Tag,
 )
 from users.serializers import MyUserSerializer
 

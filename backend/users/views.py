@@ -1,17 +1,17 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from django.core.exceptions import ObjectDoesNotExist
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from api.filters import FilterUser
 from api.pagination import PaginationCust
-from rest_framework.response import Response
 from api.permissions import IsAdminOrReadOnly
-from users.serializers import MyUserSerializer, UserSubscriptionsSerializer
 from users.models import User, Subscriptions
+from users.serializers import MyUserSerializer, UserSubscriptionsSerializer
 
 
 class CustomUserViewSet(UserViewSet):
