@@ -91,7 +91,6 @@ jobs:
         with:
           context: ./infra/
           push: true
-          # tags: dpavlen/foodgram_nginx:latest
           tags: dpavlen/foodgram_gateway:latest
 
   deploy:
