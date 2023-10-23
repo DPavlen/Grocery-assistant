@@ -44,7 +44,7 @@ services:
       - frontend
     restart: always
     build:
-      context: ../nginx/local/
+      context: ../nginx/
       dockerfile: Dockerfile
     env_file: .env
     volumes:
