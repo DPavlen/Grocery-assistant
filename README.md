@@ -21,7 +21,12 @@
 ---
 
 ## 2. Стек технологий проекта <a id=2></a>
-[![Django](https://img.shields.io/badge/Django-4.2.1-6495ED)](https://www.djangoproject.com) [![Djangorestframework](https://img.shields.io/badge/djangorestframework-3.14.0-6495ED)](https://www.django-rest-framework.org/) [![Django Authentication with Djoser](https://img.shields.io/badge/Django_Authentication_with_Djoser-2.2.0-6495ED)](https://djoser.readthedocs.io/en/latest/getting_started.html) [![Nginx](https://img.shields.io/badge/Nginx-1.21.3-green)](https://nginx.org/ru/) [![React](https://img.shields.io/badge/React-18.2.0-blue)](https://react.dev/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
+[![Django](https://img.shields.io/badge/Django-4.2.1-6495ED)](https://www.djangoproject.com) 
+[![Djangorestframework](https://img.shields.io/badge/djangorestframework-3.14.0-6495ED)](https://www.django-rest-framework.org/) 
+[![Django Authentication with Djoser](https://img.shields.io/badge/Django_Authentication_with_Djoser-2.2.0-6495ED)](https://djoser.readthedocs.io/en/latest/getting_started.html) 
+[![Nginx](https://img.shields.io/badge/Nginx-1.21.3-green)](https://nginx.org/ru/) 
+[![React](https://img.shields.io/badge/React-18.2.0-6495ED)](https://react.dev/) 
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-6495ED)](https://www.postgresql.org/)
 
 - Веб-сервер: nginx (контейнер nginx)  
 - Frontend фреймворк: React (контейнер frontend)  
